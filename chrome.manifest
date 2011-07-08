@@ -1,0 +1,8 @@
+content	rebaterobot	content/
+overlay	chrome://browser/content/browser.xul	chrome://rebaterobot/content/overlay.xul
+
+locale	rebaterobot	en-US	locale/en-US/
+
+skin	rebaterobot	classic/1.0	skin/
+style	chrome://global/content/customizeToolbar.xul	chrome://rebaterobot/skin/overlay.css
+resource    resource  resource/
