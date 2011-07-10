@@ -17,7 +17,7 @@
     <em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL>
     <em:iconURL>chrome://sampleext/skin/mainicon.png</em:iconURL>
     <em:updateURL>http://sampleextension.mozdev.org/update.rdf</em:updateURL-->
-
+    
     <!-- Firefox -->
     <em:targetApplication>
       <Description>

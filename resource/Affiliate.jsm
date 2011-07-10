@@ -1,32 +1,21 @@
 var EXPORTED_SYMBOLS = ["Affiliate"];
 var Affiliate = Affiliate || {};
 (function(AF){
-//    var Cc = Components.classes;
-//    var Ci = Components.interfaces;
-//    function getLocalDirectory() {
-//        var directoryService = Cc["@mozilla.org/file/directory_service;1"].
-//            getService(Ci.nsIProperties);
-//        // this is a reference to the profile dir (ProfD) now.
-//        var localDir = directoryService.get("ProfD", Ci.nsIFile);
-//        localDir.append("RebateRobot");
-//        if (!localDir.exists() || !localDir.isDirectory()) {
-//            // read and write permissions to owner and group, read-only for others.
-//            localDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0774);
-//        }
-//        return localDir;
-//    };
     Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
     var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"].
                         getService(Components.interfaces.nsIConsoleService);
     AF.config = {
         engines:['chanet'],
-        merchanet:[]
+        merchanet:[],
+        aggressive:false
     }
     AF._getEngines = function(){
         var cookieManager2 = Components.classes["@mozilla.org/cookiemanager;1"]
                   .getService(Components.interfaces.nsICookieManager2);
-        var cookieService = Components.classes["@mozilla.org/cookieService;1"]
-                  .getService(Components.interfaces.nsICookieService);
+//        var cookieService = Components.classes["@mozilla.org/cookieService;1"]
+//                  .getService(Components.interfaces.nsICookieService);
+        var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
+                .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
         return {
             Chanet : {
                 scheme  :   'https',
@@ -36,34 +25,36 @@ var Affiliate = Affiliate || {};
                 merchants    :   {},
                 analyze :   function(aBrowser,webProgress,request,newLocation,PopupNotifications){
                     var Chanet = this;
-                    var merchant = Chanet.getMerchant(newLocation.host);
-//                    aConsoleService.logStringMessage(typeof PopupNotifications.show+"\n");
+                    var merchant;
+                    if(!(merchant = Chanet.getMerchant(newLocation.host)))
+                            return;//qucik return
                     var cookieFilter  = function(){
-                        for (key in merchant.cookie){
-                            aConsoleService.logStringMessage(key+"\n");
-                            var match = false;
-                            for (var e = cookieManager2.getCookiesFromHost(merchant.domain); e.hasMoreElements();) {
+                        var name;
+                        for (name in merchant.cookie){
+                            aConsoleService.logStringMessage(name+"\n");
+                            var hasCookie = false;
+                            var mCookieValue = merchant.cookie[name];
+                            for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
                                 var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
-                                if(cookie.name===key && merchant.cookie[key].test(cookie.value)){
+                                if(cookie.name === name && (typeof mCookieValue === 'Object' ? mCookieValue.test(cookie.value) : mCookieValue === cookie.value)){
                                     aConsoleService.logStringMessage(cookie.name+"\t"+cookie.value+"\n");
-                                    match = true;
+                                    hasCookie = true;
                                 }
                             }
-                            if(!match){
+                            if(!hasCookie){
                                 aConsoleService.logStringMessage("return by cookie \n");
                                 return true;
                             }
                         }
-                        for (key in merchant.session){
-                            var match = false;
-                            for (var e = cookieManager2.getCookiesFromHost(merchant.domain); e.hasMoreElements();) {
+                        for (name in merchant.session){
+                            var hasSession = false;
+                            for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
                                 var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
-                                if(cookie.name===key && merchant.session[key].test(cookie.value)){
-                                    match = true;
+                                if(cookie.name===key && merchant.session[name].test(cookie.value)){
+                                    hasSession = true;
                                 }
                             }
-                            if(!match){
-                                aConsoleService.logStringMessage("return by session \n");
+                            if(!hasSession){
                                 return true;
                             }
                         }
@@ -72,23 +63,31 @@ var Affiliate = Affiliate || {};
                     var queryFilter =   function(){
                         return !!merchant && !merchant.query.test(newLocation.spec);
                     };
-                    if(cookieFilter(merchant)){
+                    if(cookieFilter()){
 //                        if(queryFilter(newLocation,merchant)){
-//                            request.suspend();
+                            request.suspend();
                             var popupNotifications;
+                            converter.charset = "utf8";
+                            aConsoleService.logStringMessage(converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"));
                             popupNotifications = PopupNotifications.show(
                                 aBrowser,
                                 'alert',
-                                'This location '+newLocation.asciiSpec+' have rebate.Do you need Rebate automatically?',
+                                converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"),
                                 null,
                                 {   
-                                    label:'ok',
+                                    label:converter.ConvertToUnicode('是'),
                                     accessKey:'alt',
                                     callback:function(){
                                         PopupNotifications.remove(popupNotifications);
-                                        merchant.hack(cookieManager2);
-//                                        request.resume();
+                                        Chanet.hack(merchant);
 //                                        Chanet.changeURI(aBrowser,merchant);
+                                    }
+                                },
+                                {   
+                                    label:converter.ConvertToUnicode('否'),
+                                    accessKey:'alt',
+                                    callback:function(){
+                                        PopupNotifications.remove(popupNotifications);
                                     }
                                 },
                                 null,
@@ -97,6 +96,22 @@ var Affiliate = Affiliate || {};
 //                        }else{
 //                            //nothing
 //                        }
+                            request.resume();
+                    }
+                },
+                hack    :   function(merchant){
+                    var cookies = merchant.cookiesToHack,cookie,i;
+                    for(i=0;cookie=cookies[i++];){
+                        cookieManager2.add(
+                          cookie.host||merchant.host,
+                          cookie.path||'/',
+                          cookie.name,
+                          cookie.value,
+                          cookie.isSecure||false,
+                          cookie.isHttpOnly||false,
+                          cookie.isSession||false,
+                          cookie.expires||Math.floor(Date.now()/1000+86400*365)
+                        );
                     }
                 },
                 getMerchant :   function(host){
@@ -110,14 +125,6 @@ var Affiliate = Affiliate || {};
                         }
                     }
                     return  null;
-                },
-                
-                sessionFilter  :   function(){
-                    
-                },
-                
-                uriHack :   function(){
-                    
                 },
                 changeURI   :   function(aBrowser,merchant){
                     var query='',key;
@@ -133,46 +140,15 @@ var Affiliate = Affiliate || {};
         };
     };
     AF.engines = AF._getEngines();
+//    count.chanet.com.cn/click.cgi?a=218&d=203367
     AF._getMerchants = function(){
-        AF.engines.Chanet.merchants = {
-            'vancl.com':{
-                domain:'vancl.com',
-                name:'����',
-                params:{d:196669},
-//                session:{WebSourceTemp:/chanet\$\d+\|\d+/},
-                cookie:{union_visited:/1/,WebSource:/chanet\$\d+\|\d+/},
-                query:/Source=chanet&SourceSunInfo=(\d+)\|(\d+)/,
-                hack:function(cookieManager2){
-//                    chanet$6974562887|218
-                    cookieManager2.add(
-                      'vancl.com',
-                      '/',
-                      'WebSource',
-                      'chanet$6974562887|218',
-                      false,
-                      false,
-                      false,
-                      Date.now()+86400*365
-                    );
-                    cookieManager2.add(
-                      'vancl.com',
-                      '/',
-                      'union_visited',
-                      '1',
-                      false,
-                      false,
-                      false,
-                      Date.now()+86400*365
-                    );
-                }
-            },
-            'dangdang.com':{
-                domain:'dangdang.com',
-                name:'����',
-                params:{d:161780},
-                cookie:{from:/430\-\d+\-\d+/}
-            }
-        };
+        var i,engines = this.Config.engines,engine_num = engines.length,engine_name;
+        Components.utils.import("resource://resource/Util.js");
+        for(i = engine_num;i>0;i--){
+            Util.jsonLoad(engine_name = engines[i],null,function(json){
+                AF.engines[engine_name].merchant = json;
+            });
+        }
     };
     AF._getMerchants();
 })(Affiliate);
