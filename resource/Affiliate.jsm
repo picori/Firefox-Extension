@@ -144,8 +144,12 @@ var Affiliate = Affiliate || {};
     AF._getMerchants = function(){
         var i,engines = this.Config.engines,engine_num = engines.length,engine_name;
         Components.utils.import("resource://resource/Util.js");
+        var file = Components.classes["@mozilla.org/file/directory_service;1"]
+                .getService(Components.interfaces.nsIProperties)
+        		.get("AChrom", Components.interfaces.nsIFile);
+		file.append("content");
         for(i = engine_num;i>0;i--){
-            Util.jsonLoad(engine_name = engines[i],null,function(json){
+            Util.jsonLoad(file.clone().append(engines[i]+".json"),null,function(json){
                 AF.engines[engine_name].merchant = json;
             });
         }

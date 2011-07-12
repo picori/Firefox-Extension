@@ -2,7 +2,7 @@
 <?xml-stylesheet href="chrome://rebaterobot/skin/overlay.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://rebaterobot/locale/overlay.dtd">
 <overlay id="helloworld-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <script src="overlay.js"/>
+  <script src="overlay.js" type="application/javascript;version=1.7" />
 
   <menupopup id="menu_ToolsPopup">
     <menuitem id="rebaterobot_menu" label="&rebaterobot;" oncommand=""/>
