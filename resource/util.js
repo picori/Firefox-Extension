@@ -76,7 +76,7 @@ let Utils = {
       arg = {path: arg};
 
     let pathParts = arg.path.split("/");
-    let directory = Components.classes["@mozilla.org/file/directory_service;1"]
+    let directory = Cc["@mozilla.org/file/directory_service;1"]
                 .getService(Components.interfaces.nsIProperties);
     let file = directory.get("ProfD", Ci.nsIFile);
     file.QueryInterface(Ci.nsILocalFile);
@@ -103,11 +103,12 @@ let Utils = {
       that._log.trace("Loading json from disk: " + filePath);
 
     let file = Utils.getProfileFile(filePath);
+    
     if (!file.exists()) {
       callback.call(that);
       return;
     }
-
+    
     // Gecko < 2.0
     if (!NetUtil || !NetUtil.newChannel) {
       let json;
@@ -140,6 +141,7 @@ let Utils = {
         if (that._log)
           that._log.debug("Failed to load json: " + Utils.exceptionStr(ex));
       }
+      
       callback.call(that, json);
     });
   },

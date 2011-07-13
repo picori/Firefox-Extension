@@ -4,18 +4,16 @@ var Affiliate = Affiliate || {};
     Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
     var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"].
                         getService(Components.interfaces.nsIConsoleService);
+    var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
+                .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
     AF.config = {
-        engines:['chanet'],
+        engines:['Chanet'],
         merchanet:[],
         aggressive:false
-    }
+    };
     AF._getEngines = function(){
         var cookieManager2 = Components.classes["@mozilla.org/cookiemanager;1"]
                   .getService(Components.interfaces.nsICookieManager2);
-//        var cookieService = Components.classes["@mozilla.org/cookieService;1"]
-//                  .getService(Components.interfaces.nsICookieService);
-        var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
-                .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
         return {
             Chanet : {
                 scheme  :   'https',
@@ -142,15 +140,16 @@ var Affiliate = Affiliate || {};
     AF.engines = AF._getEngines();
 //    count.chanet.com.cn/click.cgi?a=218&d=203367
     AF._getMerchants = function(){
-        var i,engines = this.Config.engines,engine_num = engines.length,engine_name;
-        Components.utils.import("resource://resource/Util.js");
+        var i,engines = this.config.engines,engine_name;
+        Components.utils.import("resource://resource/util.js");
         var file = Components.classes["@mozilla.org/file/directory_service;1"]
                 .getService(Components.interfaces.nsIProperties)
         		.get("AChrom", Components.interfaces.nsIFile);
 		file.append("content");
-        for(i = engine_num;i>0;i--){
-            Util.jsonLoad(file.clone().append(engines[i]+".json"),null,function(json){
-                AF.engines[engine_name].merchant = json;
+        for(i = engines.length-1;i>=0;i--){
+            Utils.jsonLoad(engine_name=engines[i],AF,function(json){
+                this.engines[engine_name].merchant = json;
+                aConsoleService.logStringMessage(converter.ConvertToUnicode(json.name));
             });
         }
     };
