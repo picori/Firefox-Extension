@@ -1,7 +1,5 @@
 Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 Components.utils.import("resource://resource/Affiliate.jsm");
-var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"].
-                        getService(Components.interfaces.nsIConsoleService);
 var RebateRobot = {
     onLoad: function() {
         // initialization code
@@ -14,7 +12,6 @@ var RebateRobot = {
             onSecurityChange:function(){},
             onStateChange:function(){}
         });
-        //gBrowser.addTab("http://www.baidu.com");
     }
 };
 

@@ -1,18 +1,17 @@
 var EXPORTED_SYMBOLS = ["Affiliate"];
 var Affiliate = Affiliate || {};
 (function(AF){
-    var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"].
-                        getService(Components.interfaces.nsIConsoleService);
-    var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
-                .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+	Components.utils.import("resource://resource/util.js");
+	Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
+    var aConsoleService = Utils.getService("@mozilla.org/consoleservice;1","nsIConsoleService");
+    var converter = Utils.getService("@mozilla.org/intl/scriptableunicodeconverter","nsIScriptableUnicodeConverter");
     AF.config = {
         engines:['Chanet'],
-        merchanet:[],
+        merchant:[],
         aggressive:false
     };
     AF._getEngines = function(){
-        var cookieManager2 = Components.classes["@mozilla.org/cookiemanager;1"]
-                  .getService(Components.interfaces.nsICookieManager2);
+        var cookieManager2 = Utils.getService("@mozilla.org/cookiemanager;1","nsICookieManager2");
         return {
             Chanet : {
                 scheme  :   'https',
@@ -24,22 +23,20 @@ var Affiliate = Affiliate || {};
                     var Chanet = this;
                     var merchant;
                     if(!(merchant = Chanet.getMerchant(newLocation.host)))
-                            return;//qucik return
+                            return;
                     var cookieFilter  = function(){
                         var name;
                         for (name in merchant.cookie){
                             var hasCookie = false;
-                            var mCookieValueReg = new RegExp(merchant.cookie[name]);
                             for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
                                 var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
-                                if(cookie.name === name && (typeof mCookieValueReg === 'object' ? mCookieValueReg.test(cookie.value) : mCookieValueReg === cookie.value)){
+                                if(cookie.name === name && new RegExp(merchant.cookie[name]).test(cookie.value)){
                                     aConsoleService.logStringMessage(cookie.name+"\t"+cookie.value+"\n");
                                     hasCookie = true;
                                     break;
                                 }
                             }
                             if(!hasCookie){
-                                aConsoleService.logStringMessage("return by cookie \n");
                                 return true;
                             }
                         }
@@ -57,17 +54,12 @@ var Affiliate = Affiliate || {};
                         }
                         return false;
                     };
-                    var queryFilter =   function(){
-                        return !!merchant && !merchant.query.test(newLocation.spec);
-                    };
                     if(cookieFilter()){
-                        request.suspend();
                         var popupNotifications;
                         converter.charset = "utf8";
-                        aConsoleService.logStringMessage(converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"));
                         popupNotifications = PopupNotifications.show(
                             aBrowser,
-                            'alert',
+                            'moneyDigger',
                             converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"),
                             null,
                             {   
@@ -76,7 +68,6 @@ var Affiliate = Affiliate || {};
                                 callback:function(){
                                     PopupNotifications.remove(popupNotifications);
                                     Chanet.hack(merchant);
-//                                        Chanet.changeURI(aBrowser,merchant);
                                 }
                             },
                             [{   
@@ -86,10 +77,8 @@ var Affiliate = Affiliate || {};
                                     PopupNotifications.remove(popupNotifications);
                                 }
                             }],
-                            null,
-                            {timeout:Date.now() + 30000}
+                            null
                         );
-                        request.resume();
                     }
                 },
                 hack    :   function(merchant){
@@ -118,16 +107,6 @@ var Affiliate = Affiliate || {};
                         }
                     }
                     return  null;
-                },
-                changeURI   :   function(aBrowser,merchant){
-                    var query='',key;
-                    for(key in this.params){
-                        query += (query ? '&':'?')+key+'='+this.params[key];
-                    }
-                    for(key in merchant.params){
-                        query += (query ? '&':'?')+key+'='+merchant.params[key];
-                    }
-                    aBrowser.loadURI(this.scheme+'://'+this.host+this.path+query);
                 }
             }
         };
@@ -135,11 +114,6 @@ var Affiliate = Affiliate || {};
     AF.engines = AF._getEngines();
     AF._getMerchants = function(){
         var i,engines = this.config.engines,engine_name;
-        Components.utils.import("resource://resource/util.js");
-//        var file = Components.classes["@mozilla.org/file/directory_service;1"]
-//                .getService(Components.interfaces.nsIProperties)
-//        		.get("AChrom", Components.interfaces.nsIFile);
-//		file.append("content");
         for(i = engines.length-1;i>=0;i--){
             Utils.jsonLoad(engine_name=engines[i],AF,function(json){
                 this.engines[engine_name].merchants = json;

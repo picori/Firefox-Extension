@@ -244,7 +244,7 @@ let Utils = {
     return [stream, file];
   },
   
-    // Works on frames or exceptions, munges file:// URIs to shorten the paths
+  // Works on frames or exceptions, munges file:// URIs to shorten the paths
   // FIXME: filename munging is sort of hackish, might be confusing if
   // there are multiple extensions with similar filenames
   formatFrame: function Utils_formatFrame(frame) {
@@ -289,5 +289,18 @@ let Utils = {
         replace(/@[^@]*?([^\/\.]+\.\w+:)/g, "@$1");
 
     return "No traceback available";
+  },
+  
+  
+  
+  
+  getService:function(cid,iface){
+  	  Svc[cid] =  Svc[cid] || {};
+  	  Svc[cid][iface] = Svc[cid][iface] || Cc[cid].getService(Ci[iface]);
+  	  return Svc[cid][iface];
   }
+  
+  
 };
+
+var Svc = {};
