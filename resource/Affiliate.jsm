@@ -1,7 +1,6 @@
 var EXPORTED_SYMBOLS = ["Affiliate"];
 var Affiliate = Affiliate || {};
 (function(AF){
-    Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
     var aConsoleService = Components.classes["@mozilla.org/consoleservice;1"].
                         getService(Components.interfaces.nsIConsoleService);
     var converter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
@@ -29,14 +28,14 @@ var Affiliate = Affiliate || {};
                     var cookieFilter  = function(){
                         var name;
                         for (name in merchant.cookie){
-                            aConsoleService.logStringMessage(name+"\n");
                             var hasCookie = false;
-                            var mCookieValue = merchant.cookie[name];
+                            var mCookieValueReg = new RegExp(merchant.cookie[name]);
                             for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
                                 var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
-                                if(cookie.name === name && (typeof mCookieValue === 'Object' ? mCookieValue.test(cookie.value) : mCookieValue === cookie.value)){
+                                if(cookie.name === name && (typeof mCookieValueReg === 'object' ? mCookieValueReg.test(cookie.value) : mCookieValueReg === cookie.value)){
                                     aConsoleService.logStringMessage(cookie.name+"\t"+cookie.value+"\n");
                                     hasCookie = true;
+                                    break;
                                 }
                             }
                             if(!hasCookie){
@@ -62,39 +61,35 @@ var Affiliate = Affiliate || {};
                         return !!merchant && !merchant.query.test(newLocation.spec);
                     };
                     if(cookieFilter()){
-//                        if(queryFilter(newLocation,merchant)){
-                            request.suspend();
-                            var popupNotifications;
-                            converter.charset = "utf8";
-                            aConsoleService.logStringMessage(converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"));
-                            popupNotifications = PopupNotifications.show(
-                                aBrowser,
-                                'alert',
-                                converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"),
-                                null,
-                                {   
-                                    label:converter.ConvertToUnicode('是'),
-                                    accessKey:'alt',
-                                    callback:function(){
-                                        PopupNotifications.remove(popupNotifications);
-                                        Chanet.hack(merchant);
+                        request.suspend();
+                        var popupNotifications;
+                        converter.charset = "utf8";
+                        aConsoleService.logStringMessage(converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"));
+                        popupNotifications = PopupNotifications.show(
+                            aBrowser,
+                            'alert',
+                            converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"),
+                            null,
+                            {   
+                                label:converter.ConvertToUnicode('是'),
+                                accessKey:'y',
+                                callback:function(){
+                                    PopupNotifications.remove(popupNotifications);
+                                    Chanet.hack(merchant);
 //                                        Chanet.changeURI(aBrowser,merchant);
-                                    }
-                                },
-                                {   
-                                    label:converter.ConvertToUnicode('否'),
-                                    accessKey:'alt',
-                                    callback:function(){
-                                        PopupNotifications.remove(popupNotifications);
-                                    }
-                                },
-                                null,
-                                {timeout:Date.now() + 30000}
-                            );
-//                        }else{
-//                            //nothing
-//                        }
-                            request.resume();
+                                }
+                            },
+                            [{   
+                                label:converter.ConvertToUnicode('否'),
+                                accessKey:'n',
+                                callback:function(){
+                                    PopupNotifications.remove(popupNotifications);
+                                }
+                            }],
+                            null,
+                            {timeout:Date.now() + 30000}
+                        );
+                        request.resume();
                     }
                 },
                 hack    :   function(merchant){
@@ -138,18 +133,16 @@ var Affiliate = Affiliate || {};
         };
     };
     AF.engines = AF._getEngines();
-//    count.chanet.com.cn/click.cgi?a=218&d=203367
     AF._getMerchants = function(){
         var i,engines = this.config.engines,engine_name;
         Components.utils.import("resource://resource/util.js");
-        var file = Components.classes["@mozilla.org/file/directory_service;1"]
-                .getService(Components.interfaces.nsIProperties)
-        		.get("AChrom", Components.interfaces.nsIFile);
-		file.append("content");
+//        var file = Components.classes["@mozilla.org/file/directory_service;1"]
+//                .getService(Components.interfaces.nsIProperties)
+//        		.get("AChrom", Components.interfaces.nsIFile);
+//		file.append("content");
         for(i = engines.length-1;i>=0;i--){
             Utils.jsonLoad(engine_name=engines[i],AF,function(json){
-                this.engines[engine_name].merchant = json;
-                aConsoleService.logStringMessage(converter.ConvertToUnicode(json.name));
+                this.engines[engine_name].merchants = json;
             });
         }
     };
