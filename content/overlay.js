@@ -6,7 +6,7 @@ var RebateRobot = {
         this.initialized = true;
         gBrowser.addTabsProgressListener({
             onLocationChange:function(aBrowser,webProgress,request,newLocation){
-                Affiliate.engines.Chanet.analyze(aBrowser,webProgress,request,newLocation,PopupNotifications);
+                Affiliate.distribute(aBrowser,webProgress,request,newLocation,PopupNotifications);
             },
             onProgressChange:function(){},
             onSecurityChange:function(){},

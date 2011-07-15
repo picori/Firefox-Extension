@@ -35,12 +35,24 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-const EXPORTED_SYMBOLS = ['Utils'];
+const EXPORTED_SYMBOLS = ['Utils','NetUtil'];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cr = Components.results;
 const Cu = Components.utils;
+
+// File IO Flags
+const MODE_RDONLY = 0x01;
+const MODE_WRONLY = 0x02;
+const MODE_CREATE = 0x08;
+const MODE_APPEND = 0x10;
+const MODE_TRUNCATE = 0x20;
+
+// File Permission flags
+const PERMS_FILE = 0644;
+const PERMS_PASSFILE = 0600;
+const PERMS_DIRECTORY = 0755;
 
 let NetUtil;
 try {
@@ -243,6 +255,14 @@ let Utils = {
 
     return [stream, file];
   },
+  
+  _utf8Converter:(function() {
+	let converter = Cc["@mozilla.org/intl/scriptableunicodeconverter"]
+                      .createInstance(Ci.nsIScriptableUnicodeConverter);
+    converter.charset = "UTF-8";
+    return converter;
+  }()),
+  
   
   // Works on frames or exceptions, munges file:// URIs to shorten the paths
   // FIXME: filename munging is sort of hackish, might be confusing if
