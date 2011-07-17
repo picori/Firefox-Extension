@@ -1,10 +1,15 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://rebaterobot/skin/overlay.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://rebaterobot/locale/overlay.dtd">
-<overlay id="helloworld-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<overlay id="rebaterobot_overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="overlay.js" type="application/javascript;version=1.7" />
-
+  <script src="menu.js" />
   <menupopup id="menu_ToolsPopup">
-    <menuitem id="rebaterobot_menu" label="&rebaterobot;" oncommand=""/>
+    <menu id="rebaterobot_menu" label="&rebaterobot;" insertafter="javascriptConsole,devToolsSeparator">
+      <menupopup onpopupshowing="RebateRobot.XUL.Menu.init(event);">
+        <menuitem id="rebaterobot_enable" label="&enable;" oncommand="RebateRobot.XUL.Menu.enable(event);" type="checkbox" />
+        <menuseparator />
+      </menupopup>
+    </menu>
   </menupopup>
 </overlay>

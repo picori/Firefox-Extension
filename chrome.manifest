@@ -7,4 +7,4 @@ locale	rebaterobot	en-US	locale/en-US/
 
 skin	rebaterobot	classic/1.0	skin/
 style	chrome://global/content/customizeToolbar.xul	chrome://rebaterobot/skin/overlay.css
-resource    resource  resource/
+resource    modules  modules/
