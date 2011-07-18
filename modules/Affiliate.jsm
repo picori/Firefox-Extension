@@ -3,9 +3,10 @@ var Affiliate = {};
 (function(AF){
 	Components.utils.import("resource://modules/util.js");
     AF.config = {
-        engines:Utils.preference("affiliate","").split(","),
+        engines:"Chanet".split(","),
         aggressive:false
     };
+    Utils.log(Utils.getPreference("affiliate",""));
 	AF.engines = {};
     AF._getEngines = function(){
     	var i,engines = this.config.engines,engine_name;

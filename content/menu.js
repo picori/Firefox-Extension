@@ -6,7 +6,7 @@ RebateRobot.XUL.Menu = {};
     
     Menu.init = function(){
         if(RebateRobot.initialized === true){
-            document.getElementById("rebaterobot_enable").setAttribute("checked",Utils.preference("enable"));
+            document.getElementById("rebaterobot_enable").setAttribute("checked",Utils.getPreference("enable"));
             Menu.initialized = true;
         }else{
             setTimeout(Menu.init,1000);
@@ -14,7 +14,7 @@ RebateRobot.XUL.Menu = {};
     }
     
     Menu.enable = function(event){
-        Utils.preference("enable",!!event.target.getAttribute("checked"))
+        Utils.setPreference("enable",!!event.target.getAttribute("checked"))
         RebateRobot.toggleTabsProgressListener(!!event.target.getAttribute("checked"));
     };
 })(RebateRobot.XUL.Menu);

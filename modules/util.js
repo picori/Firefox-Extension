@@ -255,9 +255,11 @@ let Utils = {
   }()),
   
   
-  preference : function(name,value){
-      this.log(arguments.length>1?"set":"get");
-      return this.getService("@mozilla.org/fuel/application;1","fuelIApplication").prefs[(arguments.length>1?"set":"get")+"Value"]("extensions.rebaterobot."+name,value);
+  setPreference : function(name,value){
+      return this.getService("@mozilla.org/fuel/application;1","fuelIApplication").prefs.setValue("extensions.rebaterobot."+name,value);
+  },
+  getPreference : function(name,value){
+      return this.getService("@mozilla.org/fuel/application;1","fuelIApplication").prefs.getValue("extensions.rebaterobot."+name,value);
   },
   
   // Works on frames or exceptions, munges file:// URIs to shorten the paths

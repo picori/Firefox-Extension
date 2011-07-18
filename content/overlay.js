@@ -1,11 +1,10 @@
 Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 Components.utils.import("resource://modules/util.js");
 Components.utils.import("resource://modules/Affiliate.jsm");
-var aConsoleService = Utils.getService("@mozilla.org/consoleservice;1","nsIConsoleService");
 var RebateRobot = RebateRobot || {
     onLoad: function() {
         // initialization code
-        this.toggleTabsProgressListener(Utils.preference("enable"));
+        this.toggleTabsProgressListener(Utils.getPreference("enable"));
         this.initialized = true;
     },
     listener:{
