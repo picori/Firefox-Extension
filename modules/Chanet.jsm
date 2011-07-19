@@ -15,64 +15,65 @@ var Chanet = {};
 	Chanet.merchants = {};
     Chanet.checkUpdate = function(){
 		var Chanet = this;
-		var channel = NetUtil.newChannel("http://localhost/html/Chanet.json", "UTF-8", null);
-		var lastModified ;
-		var listener = {
-		    observe : function(aSubject, aTopic, aData) {
-		    // Make sure it is our connection first.
-		    	if (aSubject == channel) {
-			        var httpChannel = aSubject.QueryInterface(Components.interfaces.nsIHttpChannel);
-			        if (aTopic == "http-on-examine-response") {
-						channel.QueryInterface(Components.interfaces.nsIHttpChannel);
-						lastModified = channel.getResponseHeader("Last-Modified");
-						Utils.log(lastModified);
-						if(lastModified != Utils.getPreference("chanet.json.lastModified")){
-							
-						}else{
-							Utils.jsonLoad("Chanet",Chanet,function(json){
-								if(json){
-							    	this.merchants = json;
-							    	this.initialized = true;
-							    	Utils.log("get merchants from file");
-							    }else{
-							    	Utils.log("get merchants from file failed");
-							    }
-							});
-							channel = null;
-						}
-			        }
-		     	}
-		  	},
-		  
-			QueryInterface : function(aIID) {
-			if (aIID.equals(Components.interfaces.nsISupports) ||
-			    aIID.equals(Components.interfaces.nsIObserver))
-			  return this;
-			throw Components.results.NS_NOINTERFACE;
-			}
-		};
-		var observerService = Components.classes["@mozilla.org/observer-service;1"]
-	                                .getService(Components.interfaces.nsIObserverService);
-	    observerService.addObserver(listener, "http-on-examine-response", false);
-		NetUtil.asyncFetch(channel,function(aInputStream,aResult,aRequest){
-			if (!Components.isSuccessCode(aResult)) {
-				return;
-			}
-			var json = NetUtil.readInputStreamToString(aInputStream,aInputStream.available());
-			try {
-				json = JSON.parse(json);
-                json = JSON.stringify(Chanet.merchants =json);//minify the json data
-			} catch (ex) {
-                return;
-				Utils.log("parse json error");
-			}
-            Chanet.initialized = true;
-            istream.setData(json,json.length);
-			Utils.jsonSave2("Chanet",Chanet,istream,function(){
-				Utils.setPreference("chanet.json.lastModified",lastModified);
-			});
-			Utils.log("get merchants from net");
-		});
+//		var channel = NetUtil.newChannel("http://localhost/html/Chanet.json", "UTF-8", null);
+//		var lastModified ;
+//		var listener = {
+//		    observe : function(aSubject, aTopic, aData) {
+//		    // Make sure it is our connection first.
+//		    	if (aSubject == channel) {
+//			        var httpChannel = aSubject.QueryInterface(Components.interfaces.nsIHttpChannel);
+//			        if (aTopic == "http-on-examine-response") {
+//						channel.QueryInterface(Components.interfaces.nsIHttpChannel);
+//						lastModified = channel.getResponseHeader("Last-Modified");
+//						Utils.log(lastModified);
+//						if(lastModified != Utils.getPreference("chanet.json.lastModified")){
+//							
+//						}else{
+//							Utils.jsonLoad("Chanet",Chanet,function(json){
+//								if(json){
+//							    	this.merchants = json;
+//							    	this.initialized = true;
+//							    	Utils.log("get merchants from file");
+//							    }else{
+//							    	Utils.log("get merchants from file failed");
+//							    }
+//							});
+//							channel = null;
+//						}
+//			        }
+//		     	}
+//		  	},
+//		  
+//			QueryInterface : function(aIID) {
+//			if (aIID.equals(Components.interfaces.nsISupports) ||
+//			    aIID.equals(Components.interfaces.nsIObserver))
+//			  return this;
+//			throw Components.results.NS_NOINTERFACE;
+//			}
+//		};
+//		var observerService = Components.classes["@mozilla.org/observer-service;1"]
+//	                                .getService(Components.interfaces.nsIObserverService);
+//	    observerService.addObserver(listener, "http-on-examine-response", false);
+//		NetUtil.asyncFetch(channel,function(aInputStream,aResult,aRequest){
+//			if (!Components.isSuccessCode(aResult)) {
+//				return;
+//			}
+//			var json = NetUtil.readInputStreamToString(aInputStream,aInputStream.available());
+//			try {
+//				json = JSON.parse(json);
+//                json = JSON.stringify(Chanet.merchants =json);//minify the json data
+//			} catch (ex) {
+//                return;
+//				Utils.log("parse json error");
+//			}
+//            Chanet.initialized = true;
+//            istream.setData(json,json.length);
+//			Utils.jsonSave2("Chanet",Chanet,istream,function(){
+//				Utils.setPreference("chanet.json.lastModified",lastModified);
+//			});
+//			Utils.log("get merchants from net");
+//		});
+		
 //        Utils.jsonLoad("Chanet",Chanet,function(json){
 //	        if(json){
 //	        	this.merchants = json;

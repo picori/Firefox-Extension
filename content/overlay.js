@@ -15,8 +15,8 @@ var RebateRobot = RebateRobot || {
         onSecurityChange:function(){},
         onStateChange:function(){}
     },
-    toggleTabsProgressListener:function(status){
-        gBrowser[(status ?"add":"remove")+"TabsProgressListener"](this.listener);
+    toggleTabsProgressListener:function(enable){
+        gBrowser[(enable ?"add":"remove")+"TabsProgressListener"](this.listener);
     }
 };
 //

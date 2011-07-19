@@ -6,7 +6,7 @@ var Affiliate = {};
         engines:"Chanet".split(","),
         aggressive:false
     };
-    Utils.log(Utils.getPreference("affiliate",""));
+    Utils.log(Utils.getPreference("affiliate"));
 	AF.engines = {};
     AF._getEngines = function(){
     	var i,engines = this.config.engines,engine_name;
