@@ -74,32 +74,32 @@ var Chanet = {};
 //			Utils.log("get merchants from net");
 //		});
 		
-//        Utils.jsonLoad("Chanet",Chanet,function(json){
-//	        if(json){
-//	        	this.merchants = json;
-//	        	this.initialized = true;
-//	        	Utils.log("get merchants from file");
-//	        }else{
-//	        	var channel = NetUtil.newChannel("http://localhost/html/Chanet.json", "UTF-8", null);
-//				NetUtil.asyncFetch(channel,function(aInputStream,aResult,aRequest){
-//					if (!Components.isSuccessCode(aResult)) {
-//						return;
-//					}
-//					var json = NetUtil.readInputStreamToString(aInputStream,aInputStream.available());
-//					try {
-//						json = JSON.parse(json);
-//                        json = JSON.stringify(Chanet.merchants =json);//minify the json data
-//					} catch (ex) {
-//                        return;
-//						Utils.log("parse json error");
-//					}
-//                    Chanet.initialized = true;
-//                    istream.setData(json,json.length);
-//					Utils.jsonSave2("Chanet",Chanet,istream,function(){});
-//					Utils.log("get merchants from net");
-//				});
-//	        }
-//		});
+        Utils.jsonLoad("Chanet",Chanet,function(json){
+	        if(json){
+	        	this.merchants = json;
+	        	this.initialized = true;
+	        	Utils.log("get merchants from file");
+	        }else{
+	        	var channel = NetUtil.newChannel("http://localhost/html/Chanet.json", "UTF-8", null);
+				NetUtil.asyncFetch(channel,function(aInputStream,aResult,aRequest){
+					if (!Components.isSuccessCode(aResult)) {
+						return;
+					}
+					var json = NetUtil.readInputStreamToString(aInputStream,aInputStream.available());
+					try {
+						json = JSON.parse(json);
+                        json = JSON.stringify(Chanet.merchants =json);//minify the json data
+					} catch (ex) {
+                        return;
+						Utils.log("parse json error");
+					}
+                    Chanet.initialized = true;
+                    istream.setData(json,json.length);
+					Utils.jsonSave2("Chanet",Chanet,istream,function(){});
+					Utils.log("get merchants from net");
+				});
+	        }
+		});
 	};
     Chanet.analyze = function(aBrowser,webProgress,request,newLocation,PopupNotifications){
 	    var Chanet = this;

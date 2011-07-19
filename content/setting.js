@@ -10,17 +10,19 @@ RebateRobot.XUL.Dialog = {};
     	var tabpanels = document.getElementById("affiliate_list").getElementsByTagName("tabpanels")[0];
     	Utils.log(affiliates);
     	for(i=0;i<affiliates.length;i++){
-    		tab = document.createElement("tab");
-    		tabpanel = document.createElement("tabpanel");
-    		checkbox = document.createElement("checkbox");
-    		tab.setAttribute("label",affiliates[i]);
-    		tabs.appendChild(tab);
-    		checkbox.setAttribute("label",affiliates[i]);
-    		tabpanel.appendChild(checkbox);
-    		tabpanels.appendChild(tabpanel);
+//    		tab = document.createElement("tab");
+//    		tab.setAttribute("label",affiliates[i]);
+//            tab.setAttribute("id",affiliates[i].toLowerCase()+"_tab");
+//    		tabs.appendChild(tab);
+//            
+//            tabpanel = document.createElement("tabpanel");
+//            tabpanel.setAttribute("id",affiliates[i].toLowerCase()+"_tabpanel");
+//    		tabpanels.appendChild(tabpanel);
     	}
 	};
-	Dialog.doSave = function(){};
+	Dialog.doSave = function(){
+        Utils.setPreference("defaultAffiliate")
+    };
 	Dialog.doCancel = function(){};
 	
 })(RebateRobot.XUL.Dialog);

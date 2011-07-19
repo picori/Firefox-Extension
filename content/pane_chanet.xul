@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<overlay id="chanet_pane" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"> 
+<preferences>
+  <preference id="extensions.rebaterobot.chanet.asid" name="extensions.rebaterobot.chanet.asid" type="int"/>
+</preferences>
+<vbox>
+    <label control="as_id" value="Enter your as id:" /><textbox preference="extensions.rebaterobot.chanet.asid" id="as_id" placeholder="Your given as id,eg(218)" />
+</vbox>
+</overlay>
