@@ -2,12 +2,9 @@ var EXPORTED_SYMBOLS = ["AffiliateManager"];
 var AffiliateManager = {};
 (function(AFM){
 	Components.utils.import("resource://modules/util.js");
-	var affiliates = Utils.getPreference("affiliate").split(","),i;
-	for(i=0;i<affiliates.length;i++){
-		Utils.getPreference(affiliates[i].toLowerCase()+".disable") && affiliates.splice(i--,1);
-	}
+
     AFM.config = {
-        engines:affiliates,
+        engines:Utils.getPreference("enableAffiliates").split(","),
         aggressive:false
     };
 	AFM.engines = {};

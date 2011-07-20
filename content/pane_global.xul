@@ -3,17 +3,33 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<prefpane id="pane_global" label="&pane.global.title;"  orient="vertical" onpaneload="RebateRobot.XUL.Preference.globalPaneOnLoad();">
 	    <preferences>
-	      <preference id="extensions.rebaterobot.defaulAffiliate" name="extensions.rebaterobot.defaulAffiliate" type="string"/>
+	      <preference id="extensions.rebaterobot.enableAffiliates" name="extensions.rebaterobot.enableAffiliates" type="string"/>
+          <preference id="extensions.rebaterobot.disableAffiliates" name="extensions.rebaterobot.disableAffiliates" type="string"/>
 	      <preference id="extensions.rebaterobot.notificationMode" name="extensions.rebaterobot.notificationMode" type="int"/>
 	    </preferences>
 	    <vbox align="top" height="300" width="300">
 		    <groupbox>
-		    	<caption label="Default Affiliate"/>
-			    <radiogroup preference="extensions.rebaterobot.defaulAffiliate">
-			      <radio label="Chanet" value="Chanet" accesskey="C" selected="true"/>
-			      <radio label="Yiqifa" value="Yiqifa" accesskey="Y" disabled="true"/>
-			      <radio label="Linktech" value="Linktech" accesskey="L" disabled="true"/>
-			    </radiogroup>
+                <caption label="Default Affiliate"/>
+                <hbox>	
+                    <vbox>
+        			    <listbox id="enableAffiliates" preference="extensions.rebaterobot.enableAffiliates">
+                        </listbox>
+                        <hbox align="center">
+                            <spacer flex="1"/>
+                            <button label="Move Up" onclick="RebateRobot.XUL.Preference.moveUp();" />
+                            <button label="Move Down" onclick="RebateRobot.XUL.Preference.moveDown();" />
+                            <spacer flex="1"/>
+                        </hbox>
+                    </vbox>
+                    <vbox align="center">
+                        <spacer flex="1"/>
+                        <button label="Move Left" onclick="RebateRobot.XUL.Preference.moveLeft();" />
+                        <button label="Move Right" onclick="RebateRobot.XUL.Preference.moveRight();" />
+                        <spacer flex="1"/>
+                    </vbox>
+                    <listbox id="disableAffiliates" preference="extensions.rebaterobot.disableAffiliates">
+                    </listbox>
+                </hbox>
 		    </groupbox>
 		    <groupbox>
 	  			<caption label="Notification Mode"/>
