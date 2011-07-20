@@ -1,2 +1,8 @@
-<!ENTITY pane_global.title "设置默认联盟">
-<!ENTITY pane_chanet.title "设置成果联盟">
+<!ENTITY pref.title "自定义配置">
+<!ENTITY pane.global.title "全局设置">
+<!ENTITY pane.chanet.title "设置金果果联盟">
+<!ENTITY pane.yiqifa.title "设置一起发疯联盟">
+<!ENTITY pane.linktech.title "设置连线技能联盟">
+<!ENTITY button.reset "恢复默认值">
+<!ENTITY button.confirm "保存">
+<!ENTITY button.cancel "取消">

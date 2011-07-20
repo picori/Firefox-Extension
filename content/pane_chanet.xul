@@ -1,9 +1,27 @@
 <?xml version="1.0"?>
-<overlay id="chanet_pane" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"> 
-<preferences>
-  <preference id="extensions.rebaterobot.chanet.asid" name="extensions.rebaterobot.chanet.asid" type="int"/>
-</preferences>
-<vbox>
-    <label control="as_id" value="Enter your as id:" /><textbox preference="extensions.rebaterobot.chanet.asid" id="as_id" placeholder="Your given as id,eg(218)" />
-</vbox>
+<!DOCTYPE overlay SYSTEM "chrome://rebaterobot/locale/preference.dtd">
+<overlay id="chanet_pane" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<prefpane id="pane_chanet" label="&pane.chanet.title;"  orient="vertical" onpaneload="RebateRobot.XUL.Preference.chanetPaneOnLoad();" >
+		<preferences>
+		  <preference id="extensions.rebaterobot.chanet.asid" name="extensions.rebaterobot.chanet.asid" type="int"/>
+		  <preference id="extensions.rebaterobot.chanet.extinfo" name="extensions.rebaterobot.chanet.extinfo" type="int"/>
+		  <preference id="extensions.rebaterobot.chanet.userinfo" name="extensions.rebaterobot.chanet.userinfo" type="string"/>
+		  <preference id="extensions.rebaterobot.chanet.disable" name="extensions.rebaterobot.chanet.disable" type="bool"/>
+		</preferences>
+		<vbox align="top" height="300" width="300">
+			<groupbox>
+				<caption label="Define Chanet"/>
+				<checkbox id="chanet.ensable" label="enable" inverted="true" preference="extensions.rebaterobot.chanet.disable" />
+				<hbox align="center">
+			    	<label control="as_id" value="Enter your as id:" /><textbox preference="extensions.rebaterobot.chanet.asid" id="as_id" placeholder="Your given as id:" />
+			    </hbox>
+			    <hbox align="center">
+			    	<label control="ext_info" value="Enter your extra info:" /><textbox preference="extensions.rebaterobot.chanet.extinfo" id="ext_info" placeholder="Your given extra info:" />
+			    </hbox>
+			    <hbox align="center">
+			    	<label control="user_info" value="Enter your user info:" /><textbox preference="extensions.rebaterobot.chanet.userinfo" id="user_info" placeholder="Your given user info:" />
+				</hbox>
+			</groupbox>
+		</vbox>
+	</prefpane>
 </overlay>

@@ -1,6 +1,6 @@
 Components.utils.import("resource://gre/modules/PopupNotifications.jsm");
 Components.utils.import("resource://modules/util.js");
-Components.utils.import("resource://modules/Affiliate.jsm");
+Components.utils.import("resource://modules/AffiliateManager.jsm");
 var RebateRobot = RebateRobot || {
     onLoad: function() {
         // initialization code
@@ -9,7 +9,7 @@ var RebateRobot = RebateRobot || {
     },
     listener:{
         onLocationChange:function(aBrowser,webProgress,request,newLocation){
-            Affiliate.distribute(aBrowser,webProgress,request,newLocation,PopupNotifications);
+            AffiliateManager.distribute(aBrowser,webProgress,request,newLocation,PopupNotifications);
         },
         onProgressChange:function(){},
         onSecurityChange:function(){},

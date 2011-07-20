@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE overlay SYSTEM "chrome://rebaterobot/locale/preference.dtd">
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<prefpane id="pane_global" label="&pane.global.title;"  orient="vertical" onpaneload="RebateRobot.XUL.Preference.globalPaneOnLoad();">
+	    <preferences>
+	      <preference id="extensions.rebaterobot.defaulAffiliate" name="extensions.rebaterobot.defaulAffiliate" type="string"/>
+	      <preference id="extensions.rebaterobot.notificationMode" name="extensions.rebaterobot.notificationMode" type="int"/>
+	    </preferences>
+	    <vbox align="top" height="300" width="300">
+		    <groupbox>
+		    	<caption label="Default Affiliate"/>
+			    <radiogroup preference="extensions.rebaterobot.defaulAffiliate">
+			      <radio label="Chanet" value="Chanet" accesskey="C" selected="true"/>
+			      <radio label="Yiqifa" value="Yiqifa" accesskey="Y" disabled="true"/>
+			      <radio label="Linktech" value="Linktech" accesskey="L" disabled="true"/>
+			    </radiogroup>
+		    </groupbox>
+		    <groupbox>
+	  			<caption label="Notification Mode"/>
+			    <radiogroup preference="extensions.rebaterobot.notificationMode">
+			      <radio label="Silence" value="1" />
+			      <radio label="Notification and Confirmation" value="2" />
+			      <radio label="Notification Only" value="3" />
+			    </radiogroup>
+			</groupbox>
+		</vbox>
+	</prefpane>
+</overlay>

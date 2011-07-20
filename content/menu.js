@@ -14,7 +14,7 @@ RebateRobot.XUL.Menu = {};
         }
 	};
     Menu.setting = function(event){
-        window.openDialog("chrome://rebaterobot/content/preference.xul","setting_dialog");
+        window.openDialog("chrome://rebaterobot/content/preference.xul","Preferences","chrome,titlebar,toolbar,centerscreen,modal");
 //        window.openDialog("chrome://rebaterobot/content/setting.xul","setting_dialog");
 	};
     Menu.enable = function(event){

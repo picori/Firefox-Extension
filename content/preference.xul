@@ -2,16 +2,13 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <!DOCTYPE prefwindow SYSTEM "chrome://rebaterobot/locale/preference.dtd">
 <prefwindow id="appPreferences"
-            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <prefpane id="pane_global" label="&pane_global.title;">
-    <preferences>
-      <preference id="extensions.rebaterobot.defaulAffiliate" name="extensions.rebaterobot.defaulAffiliate" type="string"/>
-    </preferences>
-    <radiogroup preference="extensions.rebaterobot.defaulAffiliate">
-      <radio label="Chanet" value="Chanet" accesskey="C" selected="true"/>
-      <radio label="Yiqifa" value="Yiqifa" accesskey="Y" disabled="true"/>
-      <radio label="Linktech" value="Linktech" accesskey="L" disabled="true"/>
-    </radiogroup>
-  </prefpane>
-  <prefpane id="pane_chanet" label="&pane_chanet.title;" src="chrome://rebaterobot/content/pane_chanet.xul"/>
+            xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            persist="lastSelected screenX screenY"
+			title="&pref.title;" 
+			buttons="accept,cancel"
+			onload="RebateRobot.XUL.Preference.windowOnLoad(event);"
+			style="">
+  <prefpane id="pane_global" label="&pane.global.title;" src="chrome://rebaterobot/content/pane_global.xul"/>
+  <prefpane id="pane_chanet" class="affiliate" label="&pane.chanet.title;" src="chrome://rebaterobot/content/pane_chanet.xul"/>
+  <script src="chrome://rebaterobot/content/preference.js" />
 </prefwindow>
