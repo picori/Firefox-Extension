@@ -3,11 +3,9 @@
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<prefpane id="pane_global" label="&pane.global.title;"  orient="vertical" onpaneload="RebateRobot.XUL.Preference.globalPaneOnLoad();">
 	    <preferences>
-	      <!--<preference id="extensions.rebaterobot.enableAffiliates" name="extensions.rebaterobot.enableAffiliates" type="string"/>
-          <preference id="extensions.rebaterobot.disableAffiliates" name="extensions.rebaterobot.disableAffiliates" type="string"/>-->
 	      <preference id="extensions.rebaterobot.notificationMode" name="extensions.rebaterobot.notificationMode" type="int"/>
 	    </preferences>
-	    <vbox align="top" style="height:400px;width:600px;overflow:hidden;">
+	    <vbox align="top" style="height:400px;width:600px;">
 		    <groupbox style="width:600px;">
                 <caption label="Default Affiliate"/>
                 <hbox align="center">	

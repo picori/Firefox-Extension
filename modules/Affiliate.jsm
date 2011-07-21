@@ -5,6 +5,7 @@ var Affiliate = {};
 	var cookieManager2 = Utils.getService("@mozilla.org/cookiemanager;1","nsICookieManager2");
 	var converter = Utils.getService("@mozilla.org/intl/scriptableunicodeconverter","nsIScriptableUnicodeConverter");
 	var istream = Utils.getService("@mozilla.org/io/string-input-stream;1","nsIStringInputStream");
+    converter.charset = "UTF-8";
     
     Affiliate.affiliateName = "";
     Affiliate.initialized = false;
@@ -138,32 +139,58 @@ var Affiliate = {};
 	        return false;
 	    };
 	    if(cookieFilter()){
-	        var popupNotifications;
-	        converter.charset = "UTF-8";
-	        popupNotifications = PopupNotifications.show(
-	            aBrowser,
-	            'AffiliateDigger',
-	            converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"),
-	            null,
-	            {   
-	                label:converter.ConvertToUnicode('是'),
-	                accessKey:'y',
-	                callback:function(){
-	                    PopupNotifications.remove(popupNotifications);
-	                    Affiliate.hack(merchant);
-	                }
-	            },
-	            [{   
-	                label:converter.ConvertToUnicode('否'),
-	                accessKey:'n',
-	                callback:function(){
-	                    PopupNotifications.remove(popupNotifications);
-	                }
-	            }],
-	            null
-	        );
+	        this.notify(aBrowser,merchant,PopupNotifications);
 	    }
 	};
+    Affiliate.notify = function(aBrowser,merchant,PopupNotifications){
+        var popupNotifications;
+        switch(Utils.getPreference("notificationMode")){
+            case 1:
+                this.hack(merchant);
+                break;
+            case 2:
+                popupNotifications = PopupNotifications.show(
+                    aBrowser,
+                    'AffiliateDigger',
+                    converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"),
+                    null,
+                    {   
+                        label:converter.ConvertToUnicode('是'),
+                        accessKey:'y',
+                        callback:function(){
+                            PopupNotifications.remove(popupNotifications);
+                            Affiliate.hack(merchant);
+                        }
+                    },
+                    [{   
+                        label:converter.ConvertToUnicode('否'),
+                        accessKey:'n',
+                        callback:function(){
+                            PopupNotifications.remove(popupNotifications);
+                        }
+                    }],
+                    null
+                );
+                break;
+            case 3:
+                popupNotifications = PopupNotifications.show(
+                    aBrowser,
+                    'AffiliateDigger',
+                    converter.ConvertToUnicode(merchant.name+"网站发现有利可图,自动图了他！"),
+                    null,
+                    null,
+                    null,
+                    {
+                        timeout:Date.now() + 3000,
+                        eventCallback:function(state){
+                            state == "dismissed" && PopupNotifications.remove(popupNotifications);
+                        }
+                    }
+                );
+                Affiliate.hack(merchant);
+        }
+	    
+    };
     Affiliate.hack = function(merchant){
 	    var cookies = merchant.cookiesToHack,cookie,i;
 	    for(i=0;cookie=cookies[i++];){
