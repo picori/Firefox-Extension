@@ -6,47 +6,76 @@ RebateRobot.XUL.Preference = {};
     
     Preference.windowOnLoad = function(event){
     	window.centerWindowOnScreen();
-    	window.sizeToContent();
+//    	window.sizeToContent();
+    	Utils.log(window.width);
+	};
+	Preference.pref = {
+		enableAffiliates:Utils.getPreference("enableAffiliates"),
+		disableAffiliates:Utils.getPreference("disableAffiliates")
 	};
     Preference.globalPaneOnLoad = function(event){
-        var enableAffiliates = Utils.getPreference("enableAffiliates").split(','),i,enableListBox = document.getElementById("enableAffiliates"),listitem,
-        disableAffiliates = Utils.getPreference("disableAffiliates").split(','),disableListBox = document.getElementById("disableAffiliates");
-        for(i=0;i<enableAffiliates.length;i++){
-            listitem = document.createElement("listitem");
-            listitem.setAttribute("label",enableAffiliates[i]); 
-            listitem.setAttribute("value",enableAffiliates[i]);
+        var enableListBox = document.getElementById("enableAffiliates"),
+        	disableListBox = document.getElementById("disableAffiliates"),listitem;
+        Array.prototype.forEach.call(this.pref["enableAffiliates"].split(','),function(affiliate){
+        	listitem = document.createElement("listitem");
+            listitem.setAttribute("label",affiliate); 
+            listitem.setAttribute("value",affiliate);
 		    enableListBox.appendChild(listitem);
-        }
-        
-        for(i=0;i<disableAffiliates.length;i++){
-            listitem = document.createElement("listitem");
-            listitem.setAttribute("label",disableAffiliates[i]); 
-            listitem.setAttribute("value",disableAffiliates[i]);
+        });
+        Array.prototype.forEach.call(this.pref["disableAffiliates"].split(','),function(affiliate){
+        	listitem = document.createElement("listitem");
+            listitem.setAttribute("label",affiliate); 
+            listitem.setAttribute("value",affiliate);
 		    disableListBox.appendChild(listitem);
-        }
+        });
 	};
     Preference.moveLeft = function(){
-        
+        var enableListBox = document.getElementById("enableAffiliates"),
+        	disableListBox = document.getElementById("disableAffiliates"),
+			index = disableListBox.selectedIndex;
+        index > -1 && enableListBox.selectItem(enableListBox.insertBefore(disableListBox.removeItemAt(index),null));
+        this.flushAffiPref();
     };
     Preference.moveRight = function(){
-        
+        var enableListBox = document.getElementById("enableAffiliates"),
+        	disableListBox = document.getElementById("disableAffiliates"),
+			index = enableListBox.selectedIndex;
+        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(enableListBox.removeItemAt(index),null));
+        this.flushAffiPref();
     };
-    Preference.moveUp = function(){
-        var enableListBox = document.getElementById("disableAffiliates")
-        enableListBox.selectedItem.tabIndex--;
+    Preference.flushAffiPref = function(){
+        this.pref.enableAffiliates = Array.prototype.map.call(document.getElementById("enableAffiliates").childNodes,function(listitem){
+        	return listitem.value;
+        }).join(",");
+        this.pref.disableAffiliates = Array.prototype.map.call(document.getElementById("disableAffiliates").childNodes,function(listitem){
+        	return listitem.value;
+        }).join(",");
+        Utils.log(this.pref["disableAffiliates"]);
     };
-    Preference.moveDown = function(){
-        var enableListBox = document.getElementById("disableAffiliates");
-        Utils.log(enableListBox.selectedItem.tabIndex);
-        enableListBox.selectedItem.tabIndex++;
+    Preference.moveUp = function(event){
+        var disableListBox = document.getElementById("enableAffiliates");
+        var index = disableListBox.selectedIndex;
+        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(disableListBox.removeItemAt(index),disableListBox.getItemAtIndex(index==0?0:index-1)));
+        this.flushAffiPref();
+    };
+    Preference.moveDown = function(event){
+        var disableListBox = document.getElementById("enableAffiliates");
+        var index = disableListBox.selectedIndex;
+        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(disableListBox.removeItemAt(index),disableListBox.getItemAtIndex(index+1)));
+        this.flushAffiPref();
     };
     
 	Preference.chanetPaneOnLoad = function(event){
-		document.getElementById("chanet.enable").checked = !Utils.getPreference("chanet.disable");
 	};
 	Preference.doSave = function(){
-//        Utils.setPreference("defaultAffiliate")
+		var key;
+		for(key in this.pref){
+			Utils.setPreference(key,this.pref[key]);
+		}
+		return true;
     };
-	Preference.doCancel = function(){};
+	Preference.doCancel = function(){
+		return true;
+	};
 	
 })(RebateRobot.XUL.Preference);

@@ -7,6 +7,7 @@
 			title="&pref.title;" 
 			buttons="accept,cancel"
 			onload="RebateRobot.XUL.Preference.windowOnLoad(event);"
+			ondialogaccept="return RebateRobot.XUL.Preference.doSave(event);"
 			style="">
   <prefpane id="pane_global" label="&pane.global.title;" src="chrome://rebaterobot/content/pane_global.xul"/>
   <prefpane id="pane_chanet" class="affiliate" label="&pane.chanet.title;" src="chrome://rebaterobot/content/pane_chanet.xul"/>

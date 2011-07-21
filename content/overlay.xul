@@ -9,7 +9,7 @@
       <menupopup onpopupshowing="RebateRobot.XUL.Menu.init(event);">
         <menuitem id="rebaterobot_enable" label="&enable;" oncommand="RebateRobot.XUL.Menu.enable(event);" type="checkbox" />
         <menuseparator />
-	<menuitem id="rebaterobot_setting" label="&setting;" oncommand="RebateRobot.XUL.Menu.setting(event);" />
+		<menuitem id="rebaterobot_setting" label="&setting;" oncommand="RebateRobot.XUL.Menu.setting(event);" />
       </menupopup>
     </menu>
   </menupopup>
