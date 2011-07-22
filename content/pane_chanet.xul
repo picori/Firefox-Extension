@@ -8,7 +8,7 @@
 		  <preference id="extensions.rebaterobot.chanet.userinfo" name="extensions.rebaterobot.chanet.userinfo" type="string"/>
 		  <preference id="extensions.rebaterobot.chanet.disable" name="extensions.rebaterobot.chanet.disable" type="bool"/>
 		</preferences>
-		<vbox align="top" height="400" width="600">
+		<vbox align="top">
 			<groupbox>
 				<caption label="Define Chanet"/>
 				<checkbox id="chanet.enable" label="enable" inverted="true" preference="extensions.rebaterobot.chanet.disable" />

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE overlay SYSTEM "chrome://rebaterobot/locale/preference.dtd">
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<prefpane id="pane_global" label="&pane.global.title;"  orient="vertical" onpaneload="RebateRobot.XUL.Preference.globalPaneOnLoad();">
+	<prefpane id="pane.global" label="&pane.global.title;"  orient="vertical" onpaneload="RebateRobot.XUL.Preference.globalPaneOnLoad();">
 	    <preferences>
 	      <preference id="extensions.rebaterobot.notificationMode" name="extensions.rebaterobot.notificationMode" type="int"/>
 	    </preferences>
@@ -14,21 +14,23 @@
                         </listbox>
                         <hbox align="center">
                             <spacer flex="1"/>
-                            <button label="↑(Up)" onclick="RebateRobot.XUL.Preference.moveUp(event);" />
-                            <button label="↓(Down)" onclick="RebateRobot.XUL.Preference.moveDown(event);" />
+                            <button label="↑(Up)" onclick="RebateRobot.XUL.Preference.VerticalMove('enableAffiliates',-1);" />
+                            <button label="↓(Down)" onclick="RebateRobot.XUL.Preference.VerticalMove('enableAffiliates',+1);" />
                             <spacer flex="1"/>
                         </hbox>
                     </vbox>
                     <spacer flex="1"/>
                     <vbox align="center">
                         <spacer flex="1"/>
-                        <button label="←(Left)" onclick="RebateRobot.XUL.Preference.moveLeft(event);" />
-                        <button label="(Right)→" onclick="RebateRobot.XUL.Preference.moveRight(event);" />
+                        <button label="←(Left)" onclick="RebateRobot.XUL.Preference.horizontalMove('disableAffiliates','enableAffiliates');" />
+                        <button label="(Right)→" onclick="RebateRobot.XUL.Preference.horizontalMove('enableAffiliates','disableAffiliates');" />
                         <spacer flex="1"/>
                     </vbox>
                     <spacer flex="1"/>
+                    <vbox align="top">
                     <listbox id="disableAffiliates">
                     </listbox>
+                    </vbox>
                 </hbox>
 		    </groupbox>
 		    <groupbox>

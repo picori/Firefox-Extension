@@ -7,15 +7,21 @@ RebateRobot.XUL.Preference = {};
     Preference.windowOnLoad = function(event){
     	window.centerWindowOnScreen();
 //    	window.sizeToContent();
-    	Utils.log(window.width);
 	};
 	Preference.pref = {
 		enableAffiliates:Utils.getPreference("enableAffiliates"),
 		disableAffiliates:Utils.getPreference("disableAffiliates")
 	};
+	Preference.getNode = (function(){
+		var nodes = {};
+		return function(id){
+			return nodes[id] = nodes[id] || document.getElementById(id);
+		}
+	})();
     Preference.globalPaneOnLoad = function(event){
-        var enableListBox = document.getElementById("enableAffiliates"),
-        	disableListBox = document.getElementById("disableAffiliates"),listitem;
+        var enableListBox =this.getNode("enableAffiliates"),
+        	disableListBox = this.getNode("disableAffiliates"),
+        	listitem;
         Array.prototype.forEach.call(this.pref["enableAffiliates"].split(','),function(affiliate){
         	listitem = document.createElement("listitem");
             listitem.setAttribute("label",affiliate); 
@@ -29,42 +35,30 @@ RebateRobot.XUL.Preference = {};
 		    disableListBox.appendChild(listitem);
         });
 	};
-    Preference.moveLeft = function(){
-        var enableListBox = document.getElementById("enableAffiliates"),
-        	disableListBox = document.getElementById("disableAffiliates"),
-			index = disableListBox.selectedIndex;
-        index > -1 && enableListBox.selectItem(enableListBox.insertBefore(disableListBox.removeItemAt(index),null));
+	Preference.affiPaneOnLoad = function(event){
+	};
+    Preference.horizontalMove = function(from,to){
+        var fromListBox = this.getNode(from),
+        	toListBox = this.getNode(to),
+			index = fromListBox.selectedIndex;
+        index > -1 && toListBox.selectItem(toListBox.insertBefore(fromListBox.removeItemAt(index),null));
         this.flushAffiPref();
     };
-    Preference.moveRight = function(){
-        var enableListBox = document.getElementById("enableAffiliates"),
-        	disableListBox = document.getElementById("disableAffiliates"),
-			index = enableListBox.selectedIndex;
-        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(enableListBox.removeItemAt(index),null));
+    Preference.VerticalMove = function(box,direction){
+        var disableListBox = this.getNode(box);
+        var index = disableListBox.selectedIndex;
+        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(disableListBox.removeItemAt(index),disableListBox.getItemAtIndex(index+direction<0?0:index+direction)));
         this.flushAffiPref();
     };
     Preference.flushAffiPref = function(){
-        this.pref.enableAffiliates = Array.prototype.map.call(document.getElementById("enableAffiliates").childNodes,function(listitem){
+        this.pref.enableAffiliates = Array.prototype.map.call(this.getNode("enableAffiliates").childNodes,function(listitem){
         	return listitem.value;
         }).join(",");
-        this.pref.disableAffiliates = Array.prototype.map.call(document.getElementById("disableAffiliates").childNodes,function(listitem){
+        this.pref.disableAffiliates = Array.prototype.map.call(this.getNode("disableAffiliates").childNodes,function(listitem){
         	return listitem.value;
         }).join(",");
         Utils.log(this.pref["disableAffiliates"]);
     };
-    Preference.moveUp = function(event){
-        var disableListBox = document.getElementById("enableAffiliates");
-        var index = disableListBox.selectedIndex;
-        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(disableListBox.removeItemAt(index),disableListBox.getItemAtIndex(index==0?0:index-1)));
-        this.flushAffiPref();
-    };
-    Preference.moveDown = function(event){
-        var disableListBox = document.getElementById("enableAffiliates");
-        var index = disableListBox.selectedIndex;
-        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(disableListBox.removeItemAt(index),disableListBox.getItemAtIndex(index+1)));
-        this.flushAffiPref();
-    };
-    
 	Preference.chanetPaneOnLoad = function(event){
 	};
 	Preference.doSave = function(){
