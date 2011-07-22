@@ -12,6 +12,7 @@ var AffiliateManager = {};
     	var i,engines = this.config.engines,engine_name;
         for(i = engines.length-1;i>=0;i--){
             Components.utils.import("resource://modules/"+(engine_name=engines[i])+".jsm",AFM.engines);
+            AFM.engines[engine_name].checkUpdate();
         }
     };
     AFM._getEngines();

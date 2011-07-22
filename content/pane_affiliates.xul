@@ -4,10 +4,8 @@
 <overlay id="pane.affiliates" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<prefpane id="pane.affiliates" label="&pane.affiliates.title;"  orient="vertical" onpaneload="RebateRobot.XUL.Preference.affiPaneOnLoad();" >
 		<tabbox height="400" width="600">
-			<tabs>
-				<tab>
-					<label value="Chanet" />
-				</tab>
+			<tabs onselect="RebateRobot.XUL.Preference.chanetTabOnLoad();">
+				<tab label="Chanet" />
 			</tabs>
 			<tabpanels>
 				<tabpanel>

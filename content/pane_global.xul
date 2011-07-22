@@ -10,7 +10,13 @@
                 <caption label="Default Affiliate"/>
                 <hbox align="center">	
                     <vbox>
-        			    <listbox id="enableAffiliates">
+        			    <listbox id="affiliates">
+	        			    <listhead>
+							    <listheader label="Affiliate" width="100"/>
+							</listhead>
+							<listcols>
+							    <listcol flex="1"/>
+							</listcols>
                         </listbox>
                         <hbox align="center">
                             <spacer flex="1"/>

@@ -12,5 +12,4 @@ var Chanet = {};
 	Chanet.merchants = {};
 	Chanet.updateURI = "http://localhost/html/Chanet.json";
 	Chanet.__proto__ = Affiliate;
-	Chanet.checkUpdate();
 })(Chanet);

@@ -3,14 +3,16 @@ RebateRobot.XUL = RebateRobot.XUL || {};
 RebateRobot.XUL.Preference = {};
 (function(Preference){
     Components.utils.import("resource://modules/util.js");
+    var converter = Utils.getService("@mozilla.org/intl/scriptableunicodeconverter","nsIScriptableUnicodeConverter");
+    converter.charset = "UTF-8";
     
     Preference.windowOnLoad = function(event){
     	window.centerWindowOnScreen();
 //    	window.sizeToContent();
 	};
 	Preference.pref = {
-		enableAffiliates:Utils.getPreference("enableAffiliates"),
-		disableAffiliates:Utils.getPreference("disableAffiliates")
+		affiliates:Utils.getPreference("affiliates"),
+		enableAffiliates:Utils.getPreference("enableAffiliates")
 	};
 	Preference.getNode = (function(){
 		var nodes = {};
@@ -19,24 +21,34 @@ RebateRobot.XUL.Preference = {};
 		}
 	})();
     Preference.globalPaneOnLoad = function(event){
-        var enableListBox =this.getNode("enableAffiliates"),
-        	disableListBox = this.getNode("disableAffiliates"),
+        var listBox = this.getNode("affiliates"),
+        	enableAffiliates =Preference.pref["enableAffiliates"].split(','),
         	listitem;
-        Array.prototype.forEach.call(this.pref["enableAffiliates"].split(','),function(affiliate){
+        Array.prototype.forEach.call(this.pref["affiliates"].split(','),function(affiliate){
         	listitem = document.createElement("listitem");
+        	listitem.setAttribute("type","checkbox");
+        	listitem.setAttribute("checked",enableAffiliates.indexOf(affiliate)>-1);
             listitem.setAttribute("label",affiliate); 
             listitem.setAttribute("value",affiliate);
-		    enableListBox.appendChild(listitem);
-        });
-        Array.prototype.forEach.call(this.pref["disableAffiliates"].split(','),function(affiliate){
-        	listitem = document.createElement("listitem");
-            listitem.setAttribute("label",affiliate); 
-            listitem.setAttribute("value",affiliate);
-		    disableListBox.appendChild(listitem);
+		    listBox.appendChild(listitem);
         });
 	};
 	Preference.affiPaneOnLoad = function(event){
+//		Preference.chanetTabOnLoad();
 	};
+	Preference.chanetTabOnLoad = function(){
+		Components.utils.import("resource://modules/Chanet.jsm");
+		Chanet.checkUpdate(function(){
+			var merchants = Chanet.merchants,
+				listbox = Preference.getNode("chanet.enableMerchant"),
+				host,listitem;
+			for(host in merchants){
+				listitem = document.createElement("listitem");
+	            listitem.setAttribute("label",converter.ConvertToUnicode(merchants[host].name));
+				listbox.appendChild(listitem);
+			}
+		});
+	}
     Preference.horizontalMove = function(from,to){
         var fromListBox = this.getNode(from),
         	toListBox = this.getNode(to),
@@ -45,24 +57,23 @@ RebateRobot.XUL.Preference = {};
         this.flushAffiPref();
     };
     Preference.VerticalMove = function(box,direction){
-        var disableListBox = this.getNode(box);
-        var index = disableListBox.selectedIndex;
-        index > -1 && disableListBox.selectItem(disableListBox.insertBefore(disableListBox.removeItemAt(index),disableListBox.getItemAtIndex(index+direction<0?0:index+direction)));
+        var listBox = this.getNode(box);
+        var index = listBox.selectedIndex;
+        index > -1 && listBox.selectItem(listBox.insertBefore(listBox.removeItemAt(index),listBox.getItemAtIndex(index+direction<0?0:index+direction)));
         this.flushAffiPref();
     };
     Preference.flushAffiPref = function(){
-        this.pref.enableAffiliates = Array.prototype.map.call(this.getNode("enableAffiliates").childNodes,function(listitem){
+        this.pref.enableAffiliates = Array.prototype.filter.call(this.getNode("affiliates").childNodes,function(listitem){
+        	return listitem.checked;
+        }).map(function(listitem){
         	return listitem.value;
         }).join(",");
-        this.pref.disableAffiliates = Array.prototype.map.call(this.getNode("disableAffiliates").childNodes,function(listitem){
-        	return listitem.value;
-        }).join(",");
-        Utils.log(this.pref["disableAffiliates"]);
     };
 	Preference.chanetPaneOnLoad = function(event){
 	};
 	Preference.doSave = function(){
 		var key;
+		this.flushAffiPref();
 		for(key in this.pref){
 			Utils.setPreference(key,this.pref[key]);
 		}

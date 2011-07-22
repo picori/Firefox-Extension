@@ -15,8 +15,21 @@ var Affiliate = {};
 	Affiliate.params = {};
 	Affiliate.merchants = {};
 	Affiliate.updateURI = "";
-    Affiliate.checkUpdate = function(){
+	Affiliate._isUpToDate = false;
+	Affiliate._isUpdating = false;
+	Affiliate._callbackList = [];
+    Affiliate.checkUpdate = function(callback){
 		var Affiliate = this;
+		typeof callback === "function" && Affiliate._callbackList.push(callback);
+		if(Affiliate._isUpdating){
+			return;
+		}
+		Affiliate._isUpdating = true;
+		if(Affiliate._isUpToDate){
+			Utils.log(Affiliate.affiliateName+" is uptodate ");
+			Affiliate._callbackList.forEach(function(callback){callback();});
+			return Affiliate._isUpdating = false,Affiliate._isUpToDate;
+		}
 //		var channel = NetUtil.newChannel("http://localhost/html/Affiliate.json", "UTF-8", null);
 //		var lastModified ;
 //		var listener = {
@@ -75,12 +88,11 @@ var Affiliate = {};
 //			});
 //			Utils.log("get merchants from net");
 //		});
-		
-        Utils.jsonLoad(Affiliate.affiliateName,Affiliate,function(json){
+		Utils.jsonLoad(Affiliate.affiliateName,Affiliate,function(json){
 	        if(json){
 	        	this.merchants = json;
-	        	this.initialized = true;
-	        	Utils.log("get merchants from file");
+	        	this._isUpToDate = true;
+	        	Utils.log("get merchants from file ");
 	        }else{
 	        	var channel = NetUtil.newChannel(Affiliate.updateURI, "UTF-8", null);
 				NetUtil.asyncFetch(channel,function(aInputStream,aResult,aRequest){
@@ -95,13 +107,15 @@ var Affiliate = {};
                         return;
 						Utils.log("parse json error");
 					}
-                    Affiliate.initialized = true;
+                    Affiliate._isUpToDate = true;
                     istream.setData(json,json.length);
 					Utils.jsonSave2(Affiliate.affiliateName,Affiliate,istream,function(){});
 					Utils.log("get merchants from net");
 				});
 	        }
+	        Affiliate._callbackList.forEach(function(callback){callback();});
 		});
+		return Affiliate._isUpdating = false,Affiliate.isUpToDate;
 	};
     Affiliate.analyze = function(aBrowser,webProgress,request,newLocation,PopupNotifications){
 	    var Affiliate = this;
