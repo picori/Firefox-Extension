@@ -5,25 +5,20 @@
 	    <preferences>
 	      <preference id="extensions.rebaterobot.notificationMode" name="extensions.rebaterobot.notificationMode" type="int"/>
 	    </preferences>
-	    <vbox align="top" style="height:400px;width:600px;">
-		    <groupbox style="width:600px;">
-                <caption label="Default Affiliate"/>
-                <hbox align="center">	
-                    <vbox>
-        			    <listbox id="affiliates">
-	        			    <listhead>
-							    <listheader label="Affiliate" width="100"/>
-							</listhead>
-							<listcols>
-							    <listcol flex="1"/>
-							</listcols>
+	    <vbox style="height:400px;width:600px;">
+		    <groupbox style="width:600px;height:200px;">
+                <caption label="Setting Affiliate"/>
+                <hbox>	
+                    <vbox align="center" style="padding-top:10px;">
+        			    <listbox id="enableAffiliates" rows="8">
                         </listbox>
-                        <hbox align="center">
+                        <hbox align="middle">
                             <spacer flex="1"/>
                             <button label="↑(Up)" onclick="RebateRobot.XUL.Preference.VerticalMove('enableAffiliates',-1);" />
-                            <button label="↓(Down)" onclick="RebateRobot.XUL.Preference.VerticalMove('enableAffiliates',+1);" />
+                            <button label="↓(Down)" onclick="RebateRobot.XUL.Preference.VerticalMove('disableAffiliates',+1);" />
                             <spacer flex="1"/>
                         </hbox>
+                        <spacer flex="1"/>
                     </vbox>
                     <spacer flex="1"/>
                     <vbox align="center">
@@ -33,9 +28,10 @@
                         <spacer flex="1"/>
                     </vbox>
                     <spacer flex="1"/>
-                    <vbox align="top">
-                    <listbox id="disableAffiliates">
-                    </listbox>
+                    <vbox align="top" style="margin-top:10px;">
+                        <listbox id="disableAffiliates" rows="8" >
+                        </listbox>
+                        <spacer flex="1"/>
                     </vbox>
                 </hbox>
 		    </groupbox>

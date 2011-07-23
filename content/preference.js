@@ -5,14 +5,14 @@ RebateRobot.XUL.Preference = {};
     Components.utils.import("resource://modules/util.js");
     var converter = Utils.getService("@mozilla.org/intl/scriptableunicodeconverter","nsIScriptableUnicodeConverter");
     converter.charset = "UTF-8";
-    
+    Preference._modified = false;
     Preference.windowOnLoad = function(event){
     	window.centerWindowOnScreen();
 //    	window.sizeToContent();
 	};
 	Preference.pref = {
-		affiliates:Utils.getPreference("affiliates"),
-		enableAffiliates:Utils.getPreference("enableAffiliates")
+		enableAffiliates:Utils.getPreference("enableAffiliates"),
+        disableAffiliates:Utils.getPreference("disableAffiliates")
 	};
 	Preference.getNode = (function(){
 		var nodes = {};
@@ -21,16 +21,15 @@ RebateRobot.XUL.Preference = {};
 		}
 	})();
     Preference.globalPaneOnLoad = function(event){
-        var listBox = this.getNode("affiliates"),
-        	enableAffiliates =Preference.pref["enableAffiliates"].split(','),
-        	listitem;
-        Array.prototype.forEach.call(this.pref["affiliates"].split(','),function(affiliate){
-        	listitem = document.createElement("listitem");
-        	listitem.setAttribute("type","checkbox");
-        	listitem.setAttribute("checked",enableAffiliates.indexOf(affiliate)>-1);
-            listitem.setAttribute("label",affiliate); 
-            listitem.setAttribute("value",affiliate);
-		    listBox.appendChild(listitem);
+        var listbox,listitem,listcell;
+        ["enableAffiliates","disableAffiliates"].forEach(function(name){
+            listbox = Preference.getNode(name);
+            Preference.pref[name].split(',').forEach(function(affiliate){
+            	listitem = document.createElement("listitem");
+                listcell = document.createElement("listcell");
+                listitem.setAttribute("label",affiliate);
+    		    listbox.appendChild(listitem);
+            });
         });
 	};
 	Preference.affiPaneOnLoad = function(event){
@@ -44,7 +43,11 @@ RebateRobot.XUL.Preference = {};
 				host,listitem;
 			for(host in merchants){
 				listitem = document.createElement("listitem");
-	            listitem.setAttribute("label",converter.ConvertToUnicode(merchants[host].name));
+                [converter.ConvertToUnicode(merchants[host].name),host].forEach(function(label){
+                    listcell = document.createElement("listcell");
+                    listcell.setAttribute("label",label); 
+                    listitem.appendChild(listcell);
+                });
 				listbox.appendChild(listitem);
 			}
 		});
@@ -63,10 +66,11 @@ RebateRobot.XUL.Preference = {};
         this.flushAffiPref();
     };
     Preference.flushAffiPref = function(){
-        this.pref.enableAffiliates = Array.prototype.filter.call(this.getNode("affiliates").childNodes,function(listitem){
-        	return listitem.checked;
-        }).map(function(listitem){
-        	return listitem.value;
+        this.pref.enableAffiliates = Array.prototype.map.call(this.getNode("enableAffiliates").childNodes,function(listitem){
+        	return listitem.label;
+        }).join(",");
+        this.pref.disableAffiliates = Array.prototype.map.call(this.getNode("disableAffiliates").childNodes,function(listitem){
+        	return listitem.label;
         }).join(",");
     };
 	Preference.chanetPaneOnLoad = function(event){

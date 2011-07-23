@@ -20,8 +20,8 @@ var AffiliateManager = {};
     	var i,engines = this.config.engines,engine_name,merchant,engine;
         for(i = engines.length-1;i>=0;i--){
         	engine = this.engines[engine_name=engines[i]];
-        	engine.initialized && !!engine.getMerchant(newLocation.host) &&
-        		this.engines[engine_name].analyze(aBrowser,webProgress,request,newLocation,PopupNotifications);
+        	if(this.engines[engine_name].analyze(aBrowser,webProgress,request,newLocation,PopupNotifications))
+                break;
         }
     }
 })(AffiliateManager);

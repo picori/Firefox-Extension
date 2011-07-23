@@ -2,9 +2,10 @@ var EXPORTED_SYMBOLS = ["Affiliate"];
 var Affiliate = {};
 (function(Affiliate){
 	Components.utils.import("resource://modules/util.js");
-	var cookieManager2 = Utils.getService("@mozilla.org/cookiemanager;1","nsICookieManager2");
-	var converter = Utils.getService("@mozilla.org/intl/scriptableunicodeconverter","nsIScriptableUnicodeConverter");
-	var istream = Utils.getService("@mozilla.org/io/string-input-stream;1","nsIStringInputStream");
+	var cookieManager2 = Utils.getService("@mozilla.org/cookiemanager;1","nsICookieManager2"),
+	    converter = Utils.getService("@mozilla.org/intl/scriptableunicodeconverter","nsIScriptableUnicodeConverter"),
+	    istream = Utils.getService("@mozilla.org/io/string-input-stream;1","nsIStringInputStream"),
+        timer = Utils.getService("@mozilla.org/timer;1","nsITimer");
     converter.charset = "UTF-8";
     
     Affiliate.affiliateName = "";
@@ -120,8 +121,8 @@ var Affiliate = {};
     Affiliate.analyze = function(aBrowser,webProgress,request,newLocation,PopupNotifications){
 	    var Affiliate = this;
 	    var merchant;
-	    if(!(merchant = Affiliate.getMerchant(newLocation.host)))
-	            return;
+	    if(!Affiliate._isUpToDate || !(merchant = Affiliate.getMerchant(newLocation.host)))
+	            return false;
 	    var cookieFilter  = function(){
 	        var name;
 	        for (name in merchant.cookie){
@@ -155,6 +156,7 @@ var Affiliate = {};
 	    if(cookieFilter()){
 	        this.notify(aBrowser,merchant,PopupNotifications);
 	    }
+        return true;
 	};
     Affiliate.notify = function(aBrowser,merchant,PopupNotifications){
         var popupNotifications;
@@ -194,14 +196,9 @@ var Affiliate = {};
                     null,
                     null,
                     null,
-                    {
-                        timeout:Date.now() + 3000,
-                        eventCallback:function(state){
-                            state == "dismissed" && PopupNotifications.remove(popupNotifications);
-                        }
-                    }
+                    null
                 );
-                Affiliate.hack(merchant);
+                timer.initWithCallback(function(){PopupNotifications.remove(popupNotifications);Affiliate.hack(merchant);},3000,0);
         }
 	    
     };
