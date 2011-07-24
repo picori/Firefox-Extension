@@ -10,9 +10,6 @@ var Affiliate = {};
     
     Affiliate.affiliateName = "";
     Affiliate.initialized = false;
-    Affiliate.scheme = '';
-	Affiliate.host = '';
-	Affiliate.path = '';
 	Affiliate.params = {};
 	Affiliate.merchants = {};
 	Affiliate.updateURI = "";
@@ -143,8 +140,9 @@ var Affiliate = {};
 	            var hasSession = false;
 	            for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
 	                var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
-	                if(cookie.name===key && merchant.session[name].test(cookie.value)){
+	                if(cookie.name === name && new RegExp(merchant.session[name]).test(cookie.value)){
 	                    hasSession = true;
+	                    break;
 	                }
 	            }
 	            if(!hasSession){
@@ -201,6 +199,34 @@ var Affiliate = {};
                 timer.initWithCallback(function(){PopupNotifications.remove(popupNotifications);Affiliate.hack(merchant);},3000,0);
         }
 	    
+    };
+    Affiliate.fetchURI = function(merchant){
+        var params = Chanet.params.map(function(pName){
+                pName+"="+Utils.getPreference(Affiliate.affiliateName+"."+pName);
+            }),
+            key;
+        for(key in merchant.params){
+            params.push(key+"="+merchant.params[key]);
+        }
+        Affiliate.redirectPath += params.join("&");
+    };
+    Affiliate.prepareHackCookie = function(merchant){
+    	NetUtil.asyncFetch(channel,function(aInputStream,aResult,aRequest){
+			if (!Components.isSuccessCode(aResult)) {
+				return;
+			}
+            merchant.query.forEach(function(qArray){
+                merchant.cookiesToHack.forEach(function(cArray){
+                    var match = aNewChannel.URI.path.match(qArray[0]);
+                    if(match){
+                        match.shift();
+                        match.forEach(function(value,i){
+                            cArray[1].replace(qArray[i],match[i]);
+                        });
+                    }
+                });
+            }
+		});
     };
     Affiliate.hack = function(merchant){
 	    var cookies = merchant.cookiesToHack,cookie,i;

@@ -5,11 +5,12 @@ var Chanet = {};
     
     Chanet.affiliateName = "Chanet";
     Chanet.initialized = false;
-    Chanet.scheme = 'https';
-	Chanet.host = 'count.chanet.com.cn';
-	Chanet.path = '/click.cgi';
-	Chanet.params = {a:218};
+	Chanet.params = ['a'];
 	Chanet.merchants = {};
+    Chanet.redirectPath = "https://count.chanet.com.cn/click.cgi?";
 	Chanet.updateURI = "http://localhost/html/Chanet.json";
+//    Chanet.hack = function(){
+//        
+//    }
 	Chanet.__proto__ = Affiliate;
 })(Chanet);
