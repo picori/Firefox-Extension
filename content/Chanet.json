@@ -1,0 +1,20 @@
+{
+    ".vancl.com":[
+        533,
+        "凡客",
+        {"d":196669},
+        {"WebSource":["[Source]$[SourceSunInfo]","^chanet\\$"]}
+    ],
+    ".dangdang.com":[
+        283,
+        "当当",
+        {"d":161780},
+        {"from":["[from]","^430\\-"]}
+    ],
+    ".360buy.com":[
+        514,
+        "京东",
+        {"d":203367},
+        {"unionUnId":[20,"20"],"websiteId":["[websiteId]"]}
+    ]
+}
