@@ -8,21 +8,16 @@ var Affiliate = {};
         timer = Utils.getService("@mozilla.org/timer;1","nsITimer");
     converter.charset = "UTF-8";
     
-    Affiliate.affiliateName = "";
-    Affiliate.initialized = false;
-	Affiliate.params = {};
-	Affiliate.merchants = {};
-	Affiliate.updateURI = "";
 	Affiliate._isUpToDate = false;
 	Affiliate._isUpdating = false;
 	Affiliate._callbackList = [];
     Affiliate.checkUpdate = function(callback){
 		var Affiliate = this;
-		typeof callback === "function" && Affiliate._callbackList.push(callback);
+        typeof callback === "function" && Affiliate._callbackList.push(callback);
 		if(Affiliate._isUpdating){
 			return;
 		}
-		Affiliate._isUpdating = true;
+        Affiliate._isUpdating = true;
 		if(Affiliate._isUpToDate){
 			Utils.log(Affiliate.affiliateName+" is uptodate ");
 			Affiliate._callbackList.forEach(function(callback){callback();});
@@ -102,8 +97,8 @@ var Affiliate = {};
 						json = JSON.parse(json);
                         json = JSON.stringify(Affiliate.merchants =json);//minify the json data
 					} catch (ex) {
+                        Utils.log("parse json error");
                         return;
-						Utils.log("parse json error");
 					}
                     Affiliate._isUpToDate = true;
                     istream.setData(json,json.length);
@@ -120,44 +115,28 @@ var Affiliate = {};
 	    var merchant;
 	    if(!Affiliate._isUpToDate || !(merchant = Affiliate.getMerchant(newLocation.host)))
 	            return false;
-	    var cookieFilter  = function(){
-	        var name;
-	        for (name in merchant.cookie){
-	            var hasCookie = false;
-	            for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
-	                var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
-	                if(cookie.name === name && new RegExp(merchant.cookie[name]).test(cookie.value)){
-	                    Utils.log(cookie.name+"\t"+cookie.value+"\n");
-	                    hasCookie = true;
-	                    break;
-	                }
-	            }
-	            if(!hasCookie){
-	                return true;
-	            }
-	        }
-	        for (name in merchant.session){
-	            var hasSession = false;
-	            for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
-	                var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
-	                if(cookie.name === name && new RegExp(merchant.session[name]).test(cookie.value)){
-	                    hasSession = true;
-	                    break;
-	                }
-	            }
-	            if(!hasSession){
-	                return true;
-	            }
-	        }
-	        return false;
-	    };
-	    if(cookieFilter()){
-	        this.notify(aBrowser,merchant,PopupNotifications);
+	    if(!Affiliate._hasCookie(merchant)){
+	        Affiliate.notify(aBrowser,merchant,PopupNotifications);
 	    }
         return true;
 	};
+    Affiliate._hasCookie  = function(merchant){
+        return Utils.every(merchant[3],function(cookieName,cookieInfo){
+            if(!cookieInfo[1])
+                return true;
+            for (var e = cookieManager2.getCookiesFromHost(merchant.host); e.hasMoreElements();) {
+                var cookie = e.getNext().QueryInterface(Components.interfaces.nsICookie2);
+                if(cookie.name === cookieName && new RegExp(cookieInfo[1]).test(cookie.value)){
+                    Utils.log(cookie.name+"\t"+cookie.value+"\n");
+                    return true;
+                }
+            }
+            return false;
+        });
+    };
     Affiliate.notify = function(aBrowser,merchant,PopupNotifications){
-        var popupNotifications;
+        var popupNotifications,
+            Affiliate = this;
         switch(Utils.getPreference("notificationMode")){
             case 1:
                 this.hack(merchant);
@@ -166,7 +145,7 @@ var Affiliate = {};
                 popupNotifications = PopupNotifications.show(
                     aBrowser,
                     'AffiliateDigger',
-                    converter.ConvertToUnicode(merchant.name+"网站发现有利可图,是否图了他?"),
+                    converter.ConvertToUnicode(merchant[1]+"网站发现有利可图,是否图了他?"),
                     null,
                     {   
                         label:converter.ConvertToUnicode('是'),
@@ -190,7 +169,7 @@ var Affiliate = {};
                 popupNotifications = PopupNotifications.show(
                     aBrowser,
                     'AffiliateDigger',
-                    converter.ConvertToUnicode(merchant.name+"网站发现有利可图,自动图了他！"),
+                    converter.ConvertToUnicode(merchant[1]+"网站发现有利可图,自动图了他！"),
                     null,
                     null,
                     null,
@@ -201,58 +180,73 @@ var Affiliate = {};
 	    
     };
     Affiliate.fetchURI = function(merchant){
-        var params = Chanet.params.map(function(pName){
-                pName+"="+Utils.getPreference(Affiliate.affiliateName+"."+pName);
-            }),
-            key;
-        for(key in merchant.params){
-            params.push(key+"="+merchant.params[key]);
-        }
-        Affiliate.redirectPath += params.join("&");
-    };
-    Affiliate.prepareHackCookie = function(merchant){
-    	NetUtil.asyncFetch(channel,function(aInputStream,aResult,aRequest){
-			if (!Components.isSuccessCode(aResult)) {
-				return;
-			}
-            merchant.query.forEach(function(qArray){
-                merchant.cookiesToHack.forEach(function(cArray){
-                    var match = aNewChannel.URI.path.match(qArray[0]);
-                    if(match){
-                        match.shift();
-                        match.forEach(function(value,i){
-                            cArray[1].replace(qArray[i],match[i]);
-                        });
-                    }
-                });
-            }
-		});
+        var Affiliate = this,
+            params = Affiliate.params.map(function(pName){
+                return pName+"="+Utils.getPreference(Affiliate.affiliateName.toLowerCase()+"."+pName);
+            });
+        Utils.forEach(merchant[2],function(value,name){
+            params.push(name+"="+value);
+        });
+        return Affiliate.redirectPath + params.join("&");
     };
     Affiliate.hack = function(merchant){
-	    var cookies = merchant.cookiesToHack,cookie,i;
-	    for(i=0;cookie=cookies[i++];){
-	        cookieManager2.add(
-	          cookie.host||merchant.host,
-	          cookie.path||'/',
-	          cookie.name,
-	          cookie.value,
-	          cookie.isSecure||false,
-	          cookie.isHttpOnly||false,
-	          cookie.isSession||false,
-	          cookie.expires||Math.floor(Date.now()/1000+86400*365)
-	        );
-	    }
-	};
+        var Affiliate = this,
+            channel = NetUtil.newChannel(Affiliate.fetchURI(merchant)+"&t="+Date.now(), "UTF-8", null);
+        channel.notificationCallbacks = {
+            asyncOnChannelRedirect:function(aOldChannel, aNewChannel,flag){
+                var queryString = aNewChannel.URI.path.split("?")[1];
+                Utils.forEach(merchant[3],function(cValue,cName){
+                    cookieManager2.add(
+                        merchant.host,
+                        '/',
+                        cName,
+                        cValue[0].replace(/\[([^\]]+)\]/g,function(pName){
+                            var patten = new RegExp(RegExp.$1+"=([^&]*)");
+                            Utils.log(queryString.match(patten)[1]);
+                            return queryString.match(patten)[1];
+                        }),
+                        false,
+                        false,
+                        false,
+                        Math.floor(Date.now()/1000+86400*365)
+                    );
+                });
+                aNewChannel.cancel(Components.results.NS_BINDING_REDIRECTED);
+            },
+            getInterface: function (aIID) {
+                try {
+                    return this.QueryInterface(aIID);
+                } catch (e) {
+                    throw Components.results.NS_NOINTERFACE;
+                }
+            },
+            // nsIProgressEventSink (not implementing will cause annoying exceptions)
+            onProgress : function (aRequest, aContext, aProgress, aProgressMax) { },
+            onStatus : function (aRequest, aContext, aStatus, aStatusArg) { },
+
+            // nsIHttpEventSink (not implementing will cause annoying exceptions)
+            onRedirect : function (aOldChannel, aNewChannel) { },
+            QueryInterface : function(aIID) {
+                if (aIID.equals(Components.interfaces.nsISupports) ||
+                    aIID.equals(Components.interfaces.nsIInterfaceRequestor) ||
+                    aIID.equals(Components.interfaces.nsIChannelEventSink) || 
+                    aIID.equals(Components.interfaces.nsIProgressEventSink) ||
+                    aIID.equals(Components.interfaces.nsIHttpEventSink) ||
+                    aIID.equals(Components.interfaces.nsIStreamListener))
+                        return this;
+                throw Components.results.NS_NOINTERFACE;
+            }
+        };
+        channel.asyncOpen({
+            onStartRequest:function(){},
+            onDataAvailable:function(){},
+            onStopRequest:function(){}
+        },null);
+    };
     Affiliate.getMerchant = function(host){
-	    var key;
-	    for(key in this.merchants){
-	        if(host.indexOf(key)>-1){
-	            Utils.log(key+"\t in "+host+"\n");
-	            return this.merchants[key];
-	        }else{
-	            Utils.log(key+"\t not in "+host+"\n");
-	        }
-	    }
-	    return  null;
+        var Affiliate = this;
+        return Utils.first(Affiliate.merchants,function(value,name){
+            return host.indexOf(name)>-1 && (value.host = value.host || name);
+        });
 	};
 })(Affiliate);

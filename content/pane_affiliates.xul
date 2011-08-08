@@ -10,9 +10,9 @@
 			<tabpanels>
 				<tabpanel style="">
 					<preferences>
-					  	<preference id="extensions.rebaterobot.chanet.asid" name="extensions.rebaterobot.chanet.asid" type="int"/>
-					  	<preference id="extensions.rebaterobot.chanet.extinfo" name="extensions.rebaterobot.chanet.extinfo" type="int"/>
-					  	<preference id="extensions.rebaterobot.chanet.userinfo" name="extensions.rebaterobot.chanet.userinfo" type="string"/>
+					  	<preference id="extensions.rebaterobot.chanet.a" name="extensions.rebaterobot.chanet.a" type="int"/>
+					  	<preference id="extensions.rebaterobot.chanet.e" name="extensions.rebaterobot.chanet.e" type="int"/>
+					  	<preference id="extensions.rebaterobot.chanet.u" name="extensions.rebaterobot.chanet.u" type="string"/>
 					  	<preference id="extensions.rebaterobot.chanet.disable" name="extensions.rebaterobot.chanet.disable" type="bool"/>
 					</preferences>
 					<vbox>
@@ -36,9 +36,9 @@
 						<groupbox>
 							<caption label="Setting Chanet"/>
 							<!--<checkbox id="chanet.enable" label="enable" inverted="true" preference="extensions.rebaterobot.chanet.disable" />-->
-					    	<label control="as_id" value="Enter your as id:" /><textbox preference="extensions.rebaterobot.chanet.asid" id="as_id" placeholder="Your given as id:" />
-					    	<label control="ext_info" value="Enter your extra info:" /><textbox preference="extensions.rebaterobot.chanet.extinfo" id="ext_info" placeholder="Your given extra info:" />
-					    	<label control="user_info" value="Enter your user info:" /><textbox preference="extensions.rebaterobot.chanet.userinfo" id="user_info" placeholder="Your given user info:" />
+					    	<label control="as_id" value="Enter your as id:" /><textbox preference="extensions.rebaterobot.chanet.a" id="as_id" placeholder="Your given as id:" />
+					    	<label control="ext_info" value="Enter your extra info:" /><textbox preference="extensions.rebaterobot.chanet.e" id="ext_info" placeholder="Your given extra info:" />
+					    	<label control="user_info" value="Enter your user info:" /><textbox preference="extensions.rebaterobot.chanet.u" id="user_info" placeholder="Your given user info:" />
 						</groupbox>
 					</vbox>
 				</tabpanel>

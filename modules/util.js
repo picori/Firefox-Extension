@@ -74,9 +74,6 @@ let Utils = {
    */
   jsonLoad: function Utils_jsonLoad(filePath, that, callback) {
     filePath = "rebaterobot/" + filePath + ".json";
-    if (that._log)
-      that._log.trace("Loading json from disk: " + filePath);
-
     let file = Utils.getProfileFile(filePath);
     
     if (!file.exists()) {
@@ -91,10 +88,7 @@ let Utils = {
         let [is] = Utils.open(file, "<");
         json = JSON.parse(Utils.readStream(is));
         is.close();
-      } catch (ex) {
-        if (that._log)
-          that._log.debug("Failed to load json: " + Utils.exceptionStr(ex));
-      }
+      } catch (ex) {}
       callback.call(that, json);
       return;
     }
@@ -112,10 +106,7 @@ let Utils = {
       let json;
       try {
         json = JSON.parse(string);
-      } catch (ex) {
-        if (that._log)
-          that._log.debug("Failed to load json: " + Utils.exceptionStr(ex));
-      }
+      } catch (ex) {}
       
       callback.call(that, json);
     });
@@ -136,9 +127,6 @@ let Utils = {
    */
   jsonSave: function Utils_jsonSave(filePath, that, obj, callback) {
     filePath = "rebaterobot/" + filePath + ".json";
-    if (that._log)
-      that._log.trace("Saving json to disk: " + filePath);
-
     let file = Utils.getProfileFile({ autoCreate: true, path: filePath });
     let json = typeof obj == "function" ? obj.call(that) : obj;
     let out = JSON.stringify(json);
@@ -167,9 +155,6 @@ let Utils = {
   },
   jsonSave2: function Utils_jsonSave(filePath, that, aInputStream, callback) {
     filePath = "rebaterobot/" + filePath + ".json";
-    if (that._log)
-      that._log.trace("Saving json to disk: " + filePath);
-
     let file = Utils.getProfileFile({ autoCreate: true, path: filePath });
 
     // Firefox 3.5
@@ -262,53 +247,6 @@ let Utils = {
       return this.getService("@mozilla.org/fuel/application;1","fuelIApplication").prefs.getValue("extensions.rebaterobot."+name,value);
   },
   
-  // Works on frames or exceptions, munges file:// URIs to shorten the paths
-  // FIXME: filename munging is sort of hackish, might be confusing if
-  // there are multiple extensions with similar filenames
-  formatFrame: function Utils_formatFrame(frame) {
-    let tmp = "<file:unknown>";
-
-    let file = frame.filename || frame.fileName;
-    if (file)
-      tmp = file.replace(/^(?:chrome|file):.*?([^\/\.]+\.\w+)$/, "$1");
-
-    if (frame.lineNumber)
-      tmp += ":" + frame.lineNumber;
-    if (frame.name)
-      tmp = frame.name + "()@" + tmp;
-
-    return tmp;
-  },
-
-  exceptionStr: function Weave_exceptionStr(e) {
-    let message = e.message ? e.message : e;
-    return message + " " + Utils.stackTrace(e);
-  },
-
-  stackTraceFromFrame: function Weave_stackTraceFromFrame(frame) {
-    let output = [];
-    while (frame) {
-      let str = Utils.formatFrame(frame);
-      if (str)
-        output.push(str);
-      frame = frame.caller;
-    }
-    return output.join(" < ");
-  },
-
-  stackTrace: function Weave_stackTrace(e) {
-    // Wrapped nsIException
-    if (e.location)
-      return "Stack trace: " + Utils.stackTraceFromFrame(e.location);
-
-    // Standard JS exception
-    if (e.stack)
-      return "JS Stack trace: " + e.stack.trim().replace(/\n/g, " < ").
-        replace(/@[^@]*?([^\/\.]+\.\w+:)/g, "@$1");
-
-    return "No traceback available";
-  },
-  
   
   log:function(msg){
       return this.getService("@mozilla.org/consoleservice;1","nsIConsoleService").logStringMessage(msg);
@@ -318,9 +256,39 @@ let Utils = {
   	  Svc[cid] =  Svc[cid] || {};
   	  Svc[cid][iface] = Svc[cid][iface] || Cc[cid].getService(Ci[iface]);
   	  return Svc[cid][iface];
-  }
+  },
   
-  
+    forEach:function(that,func){
+        if(Object.prototype.toString.call(that) === "[object Array]"){
+            that.forEach(func);
+        }else{
+            for(let key in that){
+                func.call(that,that[key],key,that);
+            }
+        }
+    },
+    every:function(that,func){
+        if(Object.prototype.toString.call(that) === "[object Array]"){
+            return that.every(func);
+        }else{
+            for(let key in that){
+                if(!func.call(that,that[key],key,that))
+                    return false;
+            }
+            return true;
+        }
+    },
+    first:function(that,func){
+        if(Object.prototype.toString.call(that) === "[object Array]"){
+            return that.filter(func).pop();
+        }else{
+            for(let key in that){
+                if(func.call(that,that[key],key,that))
+                    return that[key];
+            }
+            return null;
+        }
+    }
 };
 
 var Svc = {};
